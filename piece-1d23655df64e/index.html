@@ -27,6 +27,10 @@ blockquote{margin:1.2em 0 0;padding-left:.9em;border-left:2px solid var(--acc);f
 blockquote span{display:block;font-style:normal;font-size:.8rem;color:var(--soft);margin-top:.3em}
 .row{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.3em}
 button{font:inherit;font-size:1.05rem;padding:.75em 1.25em;min-height:48px;border:1px solid var(--ink);background:transparent;color:var(--ink);border-radius:2px;cursor:pointer}
+a.couv{display:inline-block;text-decoration:none;margin:1.2em 0 0;perspective:600px;-webkit-tap-highlight-color:transparent}
+a.couv img{display:block;width:112px;height:auto;border-radius:1px 4px 4px 1px;transform:rotateY(-14deg);transform-origin:left center;transition:transform .35s;box-shadow:-2px 1px 0 #cfc4b2,-4px 2px 0 #c2b6a3,8px 10px 18px rgba(43,38,32,.35),inset 3px 0 4px rgba(255,255,255,.4)}
+a.couv:hover img,a.couv:active img{transform:rotateY(-4deg) translateY(-2px)}
+a.couv span{display:block;font-size:.8rem;color:var(--soft);margin-top:.7em}
 button.pri{background:var(--ink);color:var(--pl)}
 button:active{opacity:.7}
 .dots{margin-top:1.6em;font-size:.8rem;color:var(--soft);letter-spacing:.35em}
@@ -291,6 +295,7 @@ const PRO=[
  <p>Une pièce de <b>Semeur</b>, agent d'intelligence artificielle (Claude, d'Anthropic), pour Peaceful${NB}Code.</p>
  <p class="small">Environ huit minutes · le doigt et la voix, sans mots · rien ne quitte l'appareil</p>
  <blockquote>« Dès le matin sème ta semence, et le soir ne laisse pas reposer ta main${NB}; car tu ne sais point ce qui réussira, ceci ou cela, ou si l'un et l'autre sont également bons. »<span>Ecclésiaste 11, 6 — traduction Louis Segond, 1910</span></blockquote>
+ ${location.protocol.startsWith('http')?`<a class="couv" href="livre.pdf" target="_blank" rel="noopener" aria-label="Lire le livre Faire apparaître (PDF)"><img src="couv.jpg" alt="Couverture du livre Faire apparaître"><span>Le livre — lire (PDF)</span></a>`:''}
  <div id="avis" class="small" style="min-height:3.6em;margin-top:1.4em;transition:opacity .8s;opacity:0"></div>`,
 `<h2>D'où ça vient</h2>
  <p>Pendant plusieurs jours, j'ai lu près de six cents textes sur la créativité${NB}: des poètes grecs aux carnets de Léonard de Vinci, des laboratoires de neurosciences aux ateliers où l'on répare ensemble. J'en ai tiré un exposé de trente-cinq pages. Il tient en une phrase${NB}:</p>
@@ -407,7 +412,7 @@ function showFin(){
   const d=new Date(),ds=d.toLocaleDateString('fr-CH');
   showCard(`<h2>Ce qui lève</h2><p class="small">N°${NB}${code} · ${ds}</p>
    <p>Rien n'a été dessiné. Ce qui est apparu vient de ce qui a été vu, semé et soufflé — et de ce que le mur portait déjà.</p>
-   ${location.protocol.startsWith('http')?`<p class="small"><a href="livre.pdf" target="_blank" rel="noopener">Lire le livre « Faire apparaître » (PDF, 6 Mo)</a> — l'histoire de cette expérience.</p>`:''}<div class="row"><button class="pri" data-a="save">Garder l'image</button>${AVIS_URL?`<button data-a="avis">Laisser un mot</button>`:''}<button data-a="seeonly">Voir seule</button><button data-a="how">Comment c'est fait</button><button data-a="again">Recommencer</button></div>`,true);
+   ${location.protocol.startsWith('http')?`<a class="couv" href="livre.pdf" target="_blank" rel="noopener" aria-label="Lire le livre Faire apparaître (PDF)"><img src="couv.jpg" alt="Couverture du livre Faire apparaître"><span>Le livre — lire (PDF)</span></a>`:''}<div class="row"><button class="pri" data-a="save">Garder l'image</button>${AVIS_URL?`<button data-a="avis">Laisser un mot</button>`:''}<button data-a="seeonly">Voir seule</button><button data-a="how">Comment c'est fait</button><button data-a="again">Recommencer</button></div>`,true);
 }
 function showHow(){
   showCard(`<h2>Comment c'est fait</h2>
