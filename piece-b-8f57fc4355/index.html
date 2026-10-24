@@ -57,7 +57,8 @@ button:active{opacity:.7}
 #hint{position:fixed;left:0;right:0;bottom:0;padding:2.2em 6vw calc(1.1em + env(safe-area-inset-bottom));text-align:center;font-size:clamp(1rem,3.3vw,1.2rem);line-height:1.4;color:#2b2620;background:linear-gradient(rgba(217,207,191,0),rgba(217,207,191,.88) 60%);pointer-events:none;opacity:0;transition:opacity .6s}
 #hint.on{opacity:1}
 #go{position:fixed;right:5vw;bottom:calc(6.2em + env(safe-area-inset-bottom));display:none}
-#micdot{position:fixed;left:14px;top:14px;width:12px;height:12px;border-radius:50%;background:#7a4a22;opacity:0;transition:opacity .4s;pointer-events:none}
+#micdot::after{content:'micro';position:absolute;left:22px;top:-2px;font-size:.8rem;color:#7a4a22;font-style:italic}
+#micdot{position:fixed;left:14px;top:14px;width:14px;height:14px;border-radius:50%;background:#7a4a22;opacity:0;transition:opacity .4s;pointer-events:none}
 </style>
 </head>
 <body>
@@ -294,16 +295,21 @@ function ambient(on){
 }
 
 /* ───────── micro : volume, hauteur, timbre, attaques — jamais de mots, jamais d'enregistrement ───────── */
-const mic={on:false,ana:null,buf:null,fb:null,sr:44100,db:-90,floor:-60,peak:-40,loud:0,pitch:0,voiced:0,bright:.4,dbSlow:-70,onset:0,lastOn:-9,pLo:99,pHi:0,hue:.3,hueS:.3};
+const mic={err:'',on:false,ana:null,buf:null,fb:null,sr:44100,db:-90,floor:-60,peak:-40,loud:0,pitch:0,voiced:0,bright:.4,dbSlow:-70,onset:0,lastOn:-9,pLo:99,pHi:0,hue:.3,hueS:.3};
+async function micWarm(){   // demande l'autorisation pendant le geste de l'utilisateur (Safari/iPad), puis rend le micro
+  try{const st=await navigator.mediaDevices.getUserMedia({audio:true});st.getTracks().forEach(t=>t.stop());mic.err='';}
+  catch(e){mic.err=(e&&e.name)||'erreur';}
+}
 async function micStart(){
   try{
     audioStart(); if(!AC)return false;
     const st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
     const src=AC.createMediaStreamSource(st),an=AC.createAnalyser();an.fftSize=2048;an.smoothingTimeConstant=0;src.connect(an);
-    mic.ana=an;mic.buf=new Float32Array(2048);mic.fb=new Uint8Array(an.frequencyBinCount);mic.sr=AC.sampleRate;mic.on=true;return true;
-  }catch(e){mic.on=false;return false;}
+    if(AC.state!=='running'){try{await AC.resume();}catch(_){}}
+    mic.ana=an;mic.buf=new Float32Array(2048);mic.fb=new Uint8Array(an.frequencyBinCount);mic.sr=AC.sampleRate;mic.on=true;mic.err='';return true;
+  }catch(e){mic.on=false;mic.err=(e&&e.name)||'erreur';return false;}
 }
-let micFrameN=0;
+let micFrameN=0,silentT0=0,silentWarned=true;
 function micFrame(){
   if(!mic.on)return;
   const an=mic.ana,b=mic.buf;an.getFloatTimeDomainData(b);
@@ -392,7 +398,7 @@ function renderPro(){
 card.addEventListener('click',e=>{
   const a=e.target&&e.target.getAttribute&&e.target.getAttribute('data-a'); if(!a)return;
   if(a==='next'){proI++;renderPro();}
-  else if(a==='start-mic'||a==='start-nomic'){useMic=a==='start-mic';audioStart();toAmbiance();}
+  else if(a==='start-mic'||a==='start-nomic'){useMic=a==='start-mic';audioStart();if(useMic){micWarm().then(toAmbiance);}else toAmbiance();}
   else if(a==='amb-ok'){ambOk();}
   else if(a==='amb'){toAmbiance();}
   else if(a==='offer'){offer();}
@@ -463,7 +469,8 @@ async function toGeste(){
   act=ACT.GESTE;actT0=simT;goShown=false;
   $('#micdot').style.opacity=ok?.8:0;
   setHint(ok?`Semer (on ne dessine pas : la matière répond à sa façon, et suit la direction du doigt). La voix — souffle, murmure, chant, sans mots — change ce qui pousse.`
-            :`Semer : le doigt dépose des graines.${useMic?' (Pas de micro : on continue au doigt.)':''}`);
+            :`Semer : le doigt dépose des graines.${useMic?(mic.err==='NotAllowedError'||mic.err==='SecurityError'?' (Micro refusé : on continue au doigt. Pour l\'activer sur iPad : Réglages, Safari, Sites web, Microphone.)':' (Le micro est indisponible : on continue au doigt.)'):''}`);
+  silentT0=simT;silentWarned=false;
 }
 function toPose(){
   { let c=0;const N=Math.round(900*AF);
@@ -620,6 +627,7 @@ function step(){
       const src=lastTouch&&simT-lastTouch.t<4?lastTouch:(marks.length?marks[(rnd2()*marks.length)|0]:null);
       if(src){spawn(src.x,src.y,Math.round(70*AF),hueNow(),1.5708,.4,300);dripBoost=1;}
     }
+    if(mic.on&&!silentWarned){if(mic.loud>.03)silentWarned=true;else if(simT-silentT0>12){silentWarned=true;setHint(`Le micro est actif mais ne capte rien pour l'instant${NB}: parler ou souffler près de l'appareil. (iPad${NB}: Réglages, Safari, Microphone.)`);}}
     if((stepN%12)===0&&mic.on)events.push(['v',Math.round(mic.loud*9),Math.round(mic.hueS*9)]);
     if(!goShown&&t>45*DUR){goShown=true;setGo('Laisser reposer',toPose);}
     if(t>D.geste)toPose();
