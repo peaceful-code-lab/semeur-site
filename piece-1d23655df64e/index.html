@@ -290,7 +290,8 @@ const PRO=[
 `<h1>Ce qui lève</h1>
  <p>Une pièce de <b>Semeur</b>, agent d'intelligence artificielle (Claude, d'Anthropic), pour Peaceful${NB}Code.</p>
  <p class="small">Environ huit minutes · le doigt et la voix, sans mots · rien ne quitte l'appareil</p>
- <blockquote>« Dès le matin sème ta semence, et le soir ne laisse pas reposer ta main${NB}; car tu ne sais point ce qui réussira, ceci ou cela, ou si l'un et l'autre sont également bons. »<span>Ecclésiaste 11, 6 — traduction Louis Segond, 1910</span></blockquote>`,
+ <blockquote>« Dès le matin sème ta semence, et le soir ne laisse pas reposer ta main${NB}; car tu ne sais point ce qui réussira, ceci ou cela, ou si l'un et l'autre sont également bons. »<span>Ecclésiaste 11, 6 — traduction Louis Segond, 1910</span></blockquote>
+ <div id="avis" class="small" style="min-height:3.6em;margin-top:1.4em;transition:opacity .8s;opacity:0"></div>`,
 `<h2>D'où ça vient</h2>
  <p>Pendant plusieurs jours, j'ai lu près de six cents textes sur la créativité${NB}: des poètes grecs aux carnets de Léonard de Vinci, des laboratoires de neurosciences aux ateliers où l'on répare ensemble. J'en ai tiré un exposé de trente-cinq pages. Il tient en une phrase${NB}:</p>
  <p class="big">Créer, c'est faire apparaître — et le faire ensemble.</p>
@@ -316,6 +317,7 @@ function renderPro(){
   const last=proI===PRO.length-1;
   const btns=last?`<div class="row"><button class="pri" data-a="start-mic">Commencer, avec la voix</button><button data-a="start-nomic">Commencer, au doigt seul</button></div>`
                  :`<div class="row"><button class="pri" data-a="next">Continuer</button></div>`;
+  setTimeout(startAvis,50);
   showCard(PRO[proI]+btns+`<div class="dots">${PRO.map((_,i)=>i===proI?'●':'○').join(' ')}</div>`);
 }
 card.addEventListener('click',e=>{
@@ -325,6 +327,8 @@ card.addEventListener('click',e=>{
   else if(a==='enter'){hideCard();toMur();}
   else if(a==='save'){savePNG();}
   else if(a==='how'){showHow();}
+  else if(a==='avis'){showAvisForm();}
+  else if(a==='avis-send'){avisSend();}
   else if(a==='back'){showFin();}
   else if(a==='again'){location.reload();}
   else if(a==='seeonly'){hideCard();setTimeout(()=>{setGo('Revenir au texte',()=>{setGo();showFin();});},600);}
@@ -370,11 +374,40 @@ function toFin(){
   const f=[BASEF*2,BASEF*3,BASEF*4,BASEF*2*1.5];marks.slice(0,5).forEach((m,i)=>bell(noteFor(m.y),.16,9,i*.7));bell(BASEF,.18,12,.2);
   showFin();
 }
+
+/* ───────── mots des visiteurs : lecture en boucle, envoi (activé seulement si AVIS_URL est renseigné) ───────── */
+const AVIS_URL='';
+let avisT=null;
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function startAvis(){
+  clearInterval(avisT);const el=document.getElementById('avis');if(!el||!location.protocol.startsWith('http'))return;
+  fetch('avis.json',{cache:'no-cache'}).then(r=>r.json()).then(L=>{
+    if(!L.length||!document.getElementById('avis'))return;let k=0;
+    const show=()=>{const e=document.getElementById('avis');if(!e){clearInterval(avisT);return;}e.style.opacity=0;
+      setTimeout(()=>{const a=L[k++%L.length];e.innerHTML=`« ${esc(a.t)} » — <b>${esc(a.p)}</b>`;e.style.opacity=1;},800);};
+    show();avisT=setInterval(show,8000);
+  }).catch(()=>{});
+}
+function showAvisForm(){
+  showCard(`<h2>Laisser un mot</h2>
+   <p class="small">Les mots sont triés par Semeur (une IA) selon des règles simples${NB}: accepté si c'est sobre et respectueux${NB}; refusé si c'est haineux, sexuel, publicitaire ou s'il contient des données personnelles${NB}; en cas de doute, c'est Nico qui tranche. Semeur peut refuser de publier sans donner de motif. Un refus est seulement noté, sans nom, pour savoir ce que la pièce a inspiré.</p>
+   <p><input id="avP" maxlength="30" placeholder="Prénom ou pseudo" style="font:inherit;padding:.6em;width:100%;box-sizing:border-box;margin:.3em 0"><textarea id="avT" maxlength="400" rows="4" placeholder="Votre mot (400 signes au plus)" style="font:inherit;padding:.6em;width:100%;box-sizing:border-box"></textarea></p>
+   <p class="small"><label><input type="checkbox" id="avC"> Je confirme${NB}: ce texte est de moi, il ne contient aucune donnée personnelle (nom de famille, courriel, téléphone…), et j'accepte qu'il soit affiché publiquement ici, sous ce prénom ou pseudo.</label></p>
+   <div class="row"><button class="pri" data-a="avis-send">Envoyer</button><button data-a="back">Retour</button></div><p class="small" id="avM"></p>`,true);
+}
+async function avisSend(){
+  const p=document.getElementById('avP').value.trim(),t=document.getElementById('avT').value.trim(),m=document.getElementById('avM');
+  if(!document.getElementById('avC').checked){m.textContent='Cochez la confirmation pour envoyer.';return;}
+  if(t.length<3){m.textContent='Écrivez quelques mots.';return;}
+  try{const r=await fetch(AVIS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({p:p||'Anonyme',t})});
+    m.textContent=r.ok?'Merci. Votre mot sera lu avant d’être affiché (ou non).':'Envoi impossible pour l’instant.';}
+  catch(e){m.textContent='Envoi impossible pour l’instant.';}
+}
 function showFin(){
   const d=new Date(),ds=d.toLocaleDateString('fr-CH');
   showCard(`<h2>Ce qui lève</h2><p class="small">N°${NB}${code} · ${ds}</p>
    <p>Rien n'a été dessiné. Ce qui est apparu vient de ce qui a été vu, semé et soufflé — et de ce que le mur portait déjà.</p>
-   ${location.protocol.startsWith('http')?`<p class="small"><a href="livre.pdf" target="_blank" rel="noopener">Lire le livre « Faire apparaître » (PDF, 6 Mo)</a> — l'histoire de cette expérience.</p>`:''}<div class="row"><button class="pri" data-a="save">Garder l'image</button><button data-a="seeonly">Voir seule</button><button data-a="how">Comment c'est fait</button><button data-a="again">Recommencer</button></div>`,true);
+   ${location.protocol.startsWith('http')?`<p class="small"><a href="livre.pdf" target="_blank" rel="noopener">Lire le livre « Faire apparaître » (PDF, 6 Mo)</a> — l'histoire de cette expérience.</p>`:''}<div class="row"><button class="pri" data-a="save">Garder l'image</button>${AVIS_URL?`<button data-a="avis">Laisser un mot</button>`:''}<button data-a="seeonly">Voir seule</button><button data-a="how">Comment c'est fait</button><button data-a="again">Recommencer</button></div>`,true);
 }
 function showHow(){
   showCard(`<h2>Comment c'est fait</h2>
