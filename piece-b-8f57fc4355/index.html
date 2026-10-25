@@ -49,6 +49,20 @@ a.couv span{display:block;font-size:.8rem;color:var(--soft);margin-top:.7em}
 #sq svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #sq .pt{position:absolute;width:9px;height:9px;border-radius:50%;transform:translate(-50%,-50%);border:1.5px solid rgba(43,38,32,.55);background:rgba(217,207,191,.7);pointer-events:none}
 @media(max-width:560px){#sqWrap{justify-content:center;gap:1.1em;margin:2em 0 1.8em}#sq{width:min(56vw,210px);height:min(56vw,210px)}#sqSide{text-align:center;margin-top:2.4em}}
+#step{position:fixed;top:9px;left:0;right:0;text-align:center;font-size:.8rem;font-style:italic;color:rgba(43,38,32,.5);pointer-events:none;z-index:7;transition:opacity .5s;opacity:0}
+#card.end .box{max-width:none;text-align:center}
+.endwrap svg{width:min(92vw,560px);height:auto;display:block;margin:0 auto}
+.word{font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:120px;letter-spacing:4px;fill:transparent;stroke:#b8862a;stroke-width:1.3;stroke-dasharray:900;stroke-dashoffset:900;animation:wr 3.2s ease-in-out .5s forwards,fl 1.8s ease 3.1s forwards}
+@keyframes wr{to{stroke-dashoffset:0}}
+@keyframes fl{to{fill:#c9982f}}
+.vol{fill:none;stroke:#b8862a;stroke-width:2;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes dr{to{stroke-dashoffset:0}}
+.vol.a{animation:dr 2.4s ease-in-out 4.2s forwards}.vol.b{animation:dr 2s ease-in-out 5.4s forwards}.vol.c{animation:dr 1.6s ease-in-out 6.4s forwards}
+@keyframes fi{to{opacity:1}}
+.endtxt{opacity:0;animation:fi 1.6s ease 7.2s forwards;margin-top:.4em}
+.raise{opacity:0;animation:fi 1.6s ease 8s forwards;position:fixed;right:5vw;bottom:calc(5vh + env(safe-area-inset-bottom));display:inline-block;padding:.8em 1.3em;background:linear-gradient(#e8decb,#d3c7ae);color:#2b2620;border:1px solid #8a7a5a;border-radius:6px;box-shadow:0 2px 0 #8a7a5a,0 7px 16px rgba(43,38,32,.28),inset 0 1px 0 rgba(255,255,255,.55);text-decoration:none;font-size:1.05rem}
+.raise:active{transform:translateY(2px);box-shadow:0 0 0 #8a7a5a,0 3px 8px rgba(43,38,32,.28)}
+@media(prefers-reduced-motion:reduce){.word{animation:none;fill:#c9982f;stroke-dashoffset:0}.vol{animation:none;stroke-dashoffset:0}.endtxt,.raise{animation:none;opacity:1}}
 #prog{position:fixed;left:0;right:0;bottom:0;height:3px;pointer-events:none;z-index:6;opacity:0;transition:opacity .6s}
 #prog i{display:block;height:100%;width:0;background:rgba(43,38,32,.5)}
 .dots span{cursor:pointer;padding:.5em .15em}
@@ -74,6 +88,7 @@ button:active{opacity:.7}
 <div id="micdot" title="micro : volume et hauteur seulement, rien n'est enregistré"></div>
 <div id="hint"></div>
 <div id="prog"><i></i></div>
+<div id="step"></div>
 <button id="go" class="pri"></button>
 <div id="card"><div class="box" id="box"></div></div>
 <script>
@@ -304,10 +319,6 @@ function ambient(on){
 
 /* ───────── micro : volume, hauteur, timbre, attaques — jamais de mots, jamais d'enregistrement ───────── */
 const mic={err:'',on:false,ana:null,buf:null,fb:null,sr:44100,db:-90,floor:-60,peak:-40,loud:0,pitch:0,voiced:0,bright:.4,dbSlow:-70,onset:0,lastOn:-9,pLo:99,pHi:0,hue:.3,hueS:.3};
-async function micWarm(){   // demande l'autorisation pendant le geste de l'utilisateur (Safari/iPad), puis rend le micro
-  try{const st=await navigator.mediaDevices.getUserMedia({audio:true});st.getTracks().forEach(t=>t.stop());mic.err='';}
-  catch(e){mic.err=(e&&e.name)||'erreur';}
-}
 async function micStart(){
   try{
     audioStart(); if(!AC)return false;
@@ -353,7 +364,7 @@ function micFrame(){
 
 /* ───────── états et durées ───────── */
 const ACT={PRO:0,CADRE:1,MUR:2,PAUSE:3,GESTE:4,POSE:5,FIN:6,AMB:7};
-let act=ACT.PRO,actT0=0,simT=0,coolV=0,useMic=true,frozen=false,code='';
+let act=ACT.PRO,actT0=0,simT=0,coolV=0,useMic=false,frozen=false,code='';
 const D={mur:75*DUR,pause:45*DUR,geste:150*DUR,pose:36*DUR};
 const marks=[],ptr=new Map(),events=[];
 let touchE=0,lastTouch=null,curShade=8,curCol=0,goShown=false;
@@ -392,14 +403,14 @@ ${new URLSearchParams(location.search).get('src')==='offert'?`<p class="small" s
  <ol><li><b>Des couleurs</b> — un carré pour choisir, une couleur ou les quatre.</li><li><b>Un cadre</b> — trois règles.</li><li><b>Un mur</b> — on y cherche ce qu'on voit.</li><li><b>Une pause.</b></li><li><b>Un geste</b> — le doigt, la voix (sans mots) : sa trace guidera les flux de couleur.</li><li><b>L'apparition.</b></li></ol>
  <p>Rien à dessiner${NB}: on ne trace pas des formes, on sème, et la matière répond à sa façon. Rien à écrire, personne ne juge.</p>`,
 `<h2>Ce qui n'est pas pris</h2>
- <p>Aucune intelligence artificielle ne tourne ici${NB}: seulement un programme, écrit par Semeur, qui travaille sur cet appareil. Le micro n'écoute que le volume et la hauteur de la voix${NB}: ni mots, ni enregistrement, rien n'est envoyé. On peut s'en passer${NB}: tout marche au doigt. Aucun compte, aucun suivi.</p>
+ <p>Aucune intelligence artificielle ne tourne ici${NB}: seulement un programme, écrit par Semeur, qui travaille sur cet appareil. Le micro n'écoute que le volume et la hauteur de la voix${NB}: ni mots, ni enregistrement, rien n'est envoyé. Il ne sera demandé qu'au moment du geste, et l'on peut s'en passer${NB}: tout marche au doigt. Aucun compte, aucun suivi.</p>
  <p class="small">Variante B (essai) : des couleurs au choix, un geste qui laisse sa trace, trois façons de finir.</p>`
 ];
 let proI=0;
 (()=>{let x0=null;card.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;},{passive:true});card.addEventListener('touchend',e=>{if(x0===null||act!==ACT.PRO)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>70){proI=clamp(proI+(dx<0?1:-1),0,PRO.length-1);renderPro();}},{passive:true});})();
 function renderPro(){
   const last=proI===PRO.length-1;
-  const btns=last?`<div class="row"><button class="pri" data-a="start-mic">Commencer, avec la voix</button><button data-a="start-nomic">Commencer, au doigt seul</button></div>`
+  const btns=last?`<div class="row"><button class="pri" data-a="start">Commencer</button></div>`
                  :`<div class="row"><button class="pri" data-a="next">Continuer</button></div>`;
   setTimeout(startAvis,50);
   showCard(PRO[proI]+btns+(proI>0?`<div><button class="prev" data-a="prev">‹ Précédent</button></div>`:'')+`<div class="dots">${PRO.map((_,i)=>`<span data-a="goto" data-i="${i}" aria-label="étape ${i+1}">${i===proI?'●':'○'}</span>`).join(' ')}</div>`);
@@ -409,7 +420,8 @@ card.addEventListener('click',e=>{
   if(a==='next'){proI=Math.min(proI+1,PRO.length-1);renderPro();}
   else if(a==='prev'){proI=Math.max(proI-1,0);renderPro();}
   else if(a==='goto'){proI=+e.target.getAttribute('data-i')||0;renderPro();}
-  else if(a==='start-mic'||a==='start-nomic'){useMic=a==='start-mic';audioStart();if(useMic){micWarm().then(toAmbiance);}else toAmbiance();}
+  else if(a==='start'){audioStart();toAmbiance();}
+  else if(a==='voice-yes'||a==='voice-no'){useMic=a==='voice-yes';hideCard();toGeste();}
   else if(a==='amb-ok'){ambOk();}
   else if(a==='amb'){toAmbiance();}
   else if(a==='offer'){offer();}
@@ -473,6 +485,13 @@ function schedBell(){
   if(act!==ACT.PAUSE)return;
   const f=BASEF*Math.pow(2,SEMI[Math.floor(rnd2()*10)]/12);bell(f,.12+.1*rnd2(),5+4*rnd2());
   bellTimer=setTimeout(schedBell,(1800+3800*rnd2())/Math.min(SPEED,6));
+}
+function askVoice(){
+  setGo();setHint();
+  showCard(`<h2>Le geste</h2>
+   <p>Maintenant, on sème. Le doigt dépose les couleurs choisies, et la matière suit la direction de son mouvement.</p>
+   <p>La voix peut aussi agir, sans mots${NB}: le volume, la hauteur et le souffle changent ce qui pousse. Le micro n'enregistre rien et n'envoie rien. On peut aussi s'en passer.</p>
+   <div class="row"><button class="pri" data-a="voice-yes">Avec la voix</button><button data-a="voice-no">Au doigt seul</button></div>`,true);
 }
 async function toGeste(){
   setGo();ambient(false);clearTimeout(bellTimer);
@@ -571,14 +590,21 @@ async function offer(){
   try{if(link&&navigator.clipboard){await navigator.clipboard.writeText(link);if(m)m.textContent='Image enregistrée, lien copié : à coller dans votre message.';return;}}catch(_){}
   if(m)m.textContent=link?'Image enregistrée. Le lien : '+link:'Image enregistrée.';
 }
+function showEnd(){
+  const href='https://peaceful-code-lab.github.io/semeur-site/?src=piece';
+  const vol=`<path class="vol a" pathLength="1" d="M320 236 C370 248 430 248 480 234 C515 224 540 204 532 182 C526 164 502 164 498 181 C495 194 507 201 516 195"/><path class="vol b" pathLength="1" d="M512 94 C534 78 566 82 574 106 C580 124 562 134 551 124 C543 116 550 106 558 110"/><path class="vol c" pathLength="1" d="M320 236 C320 256 316 270 304 282 M312 266 C298 262 290 266 288 274 C298 278 308 274 312 266"/>`;
+  showCard(`<div class="endwrap"><svg viewBox="0 0 640 330" role="img" aria-label="Semeur"><g>${vol}</g><g transform="translate(640,0) scale(-1,1)">${vol.replace(/ c"/g,' c"')}</g><text class="word" x="320" y="190" text-anchor="middle">Semeur</text></svg>
+   <p class="small endtxt">Ce qui est apparu n'existe plus que dans la mémoire de celui ou celle qui l'a vu. Rien n'a été gardé, rien n'a été envoyé.</p>
+   <div class="row endtxt" style="justify-content:center"><button data-a="again">Recommencer</button></div></div>
+   <a class="raise" href="${href}" target="_blank" rel="noopener">D'autres aventures arrivent</a>`,'end');
+}
 function vanish(){
   hideCard();frozen=true;const t0=performance.now(),T1=5500,T2=4500;
   (function anim(now){
     const e=now-t0;
     if(e<T1){pigK=1-e/T1;wallK=1;}
     else if(e<T1+T2){pigK=0;wallK=1-(e-T1)/T2;}
-    else{pigK=0;wallK=0;render();aR.fill(0);aG.fill(0);aB.fill(0);chem.fill(0);code='';
-      showCard(`<h2>Disparu</h2><p>Ce qui est apparu n'existe plus que dans la mémoire de celui ou celle qui l'a vu. Rien n'a été gardé, rien n'a été envoyé.</p><div class="row"><button class="pri" data-a="again">Recommencer</button></div>`,true);return;}
+    else{pigK=0;wallK=0;render();aR.fill(0);aG.fill(0);aB.fill(0);chem.fill(0);code='';showEnd();return;}
     render();requestAnimationFrame(anim);
   })(t0);
 }
@@ -644,7 +670,7 @@ function step(){
     if(t>D.geste)toPose();
   }else if(act===ACT.PAUSE){
     if((stepN%300)===0)for(const m of marks)spawn(m.x,m.y,Math.round(60*AF),m.h,-1,0,900);
-    if(t>D.pause&&!goShown){goShown=true;setHint(`Quand on veut : reprendre.`);setGo('Reprendre',toGeste);}
+    if(t>D.pause&&!goShown){goShown=true;setHint(`Quand on veut : reprendre.`);setGo('Reprendre',askVoice);}
     dimV+=(.38-dimV)*.03;
   }else if(act===ACT.MUR){
     if(!goShown&&(marks.length>=3||t>25*DUR)&&marks.length>0){goShown=true;setGo('Continuer',toPause);}
@@ -666,6 +692,8 @@ function step(){
 
 /* ───────── superpositions (anneaux, souffle, doigts) ───────── */
 function drawOv(){
+  { const st=document.getElementById('step'),L={[ACT.AMB]:'1 · Couleurs',[ACT.CADRE]:'2 · Les règles',[ACT.MUR]:'3 · Le mur',[ACT.PAUSE]:'4 · La pause',[ACT.GESTE]:'5 · Le geste',[ACT.POSE]:'5 · Le geste, ça repose'},lab=L[act];
+    if(lab){if(st.dataset.l!==lab){st.dataset.l=lab;st.textContent='Étape '+lab.replace(' · ',' sur 5 · ');}st.style.opacity=1;}else st.style.opacity=0; }
   { const pg=document.getElementById('prog');let f=-1;const t=simT-actT0;
     if(act===ACT.PAUSE)f=t/D.pause;else if(act===ACT.GESTE)f=t/D.geste;else if(act===ACT.POSE)f=t/D.pose;
     pg.style.opacity=f>=0?1:0;if(f>=0)pg.firstChild.style.width=(clamp(f,0,1)*100)+'%'; }
@@ -705,7 +733,7 @@ for(let i=0;i<NPX;i++){const j=i*4;img.data[j]=wr[i];img.data[j+1]=wg[i];img.dat
 ctx.putImageData(img,0,0);
 renderPro();
 requestAnimationFrame(frame);
-window.__lab={K,step:n=>{for(let k=0;k<n;k++)step();},render,spawn,addFood,addMark,toMur,toPause,toGeste:()=>{act=ACT.GESTE;actT0=simT;},toPose,P,setHue:h=>{curShade=h%16;curCol=(h/16)|0;},drip:()=>{},png:()=>{render();return cv.toDataURL('image/png');},ptr,get coolV(){return coolV},set coolV(v){coolV=v;},set dry(v){dryV=v;},set dim(v){dimV=v;},ACT,time:()=>simT};
+window.__lab={showEnd,K,step:n=>{for(let k=0;k<n;k++)step();},render,spawn,addFood,addMark,toMur,toPause,toGeste:()=>{act=ACT.GESTE;actT0=simT;},toPose,P,setHue:h=>{curShade=h%16;curCol=(h/16)|0;},drip:()=>{},png:()=>{render();return cv.toDataURL('image/png');},ptr,get coolV(){return coolV},set coolV(v){coolV=v;},set dry(v){dryV=v;},set dim(v){dimV=v;},ACT,time:()=>simT};
 window.__piece={get act(){return act;},get t(){return simT;},get fps(){return fps;},mic,get marks(){return marks.length;},W,H,MAXN,agents:()=>{let n=0;for(let i=0;i<MAXN;i++)if(al[i]>0)n++;return n;},cover:()=>{let n=0;for(let i=0;i<NPX;i++)if(aR[i]+aG[i]+aB[i]>.25)n++;return n/NPX;}};
 })();
 </script>
