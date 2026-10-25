@@ -45,7 +45,14 @@ a.couv span{display:block;font-size:.8rem;color:var(--soft);margin-top:.7em}
 .amb b{display:block;font-size:1.5rem;font-weight:normal;font-style:italic}
 .amb span{font-size:.85rem;color:var(--soft)}
 #sqWrap{display:flex;gap:2.2em;align-items:center;margin:2.2em 0 1.8em;flex-wrap:wrap}
-#sq{position:relative;width:min(44vw,220px);height:min(44vw,220px);border:1px solid rgba(43,38,32,.5);touch-action:none;cursor:pointer;background:rgba(255,255,255,.18)}
+#sq{position:relative;width:min(44vw,220px);height:min(44vw,220px);border:1px solid rgba(43,38,32,.4);border-radius:3px;touch-action:none;cursor:pointer;background:transparent;box-shadow:inset 0 2px 5px rgba(43,38,32,.16),0 1px 0 rgba(255,255,255,.4)}
+#sq svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#sq .pt{position:absolute;width:9px;height:9px;border-radius:50%;transform:translate(-50%,-50%);border:1.5px solid rgba(43,38,32,.55);background:rgba(217,207,191,.7);pointer-events:none}
+@media(max-width:560px){#sqWrap{justify-content:center;gap:1.1em;margin:2em 0 1.8em}#sq{width:min(56vw,210px);height:min(56vw,210px)}#sqSide{text-align:center;margin-top:2.4em}}
+#prog{position:fixed;left:0;right:0;bottom:0;height:3px;pointer-events:none;z-index:6;opacity:0;transition:opacity .6s}
+#prog i{display:block;height:100%;width:0;background:rgba(43,38,32,.5)}
+.dots span{cursor:pointer;padding:.5em .15em}
+.prev{margin-top:.8em;font-size:.95rem;min-height:40px;border-color:transparent;color:var(--soft)}
 #sq .cn{position:absolute;width:34px;height:34px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 1px 3px rgba(0,0,0,.35)}
 #sq .nm{position:absolute;font-size:.85rem;font-style:italic;color:var(--soft);pointer-events:none}
 #sqDot{position:absolute;width:22px;height:22px;border:2px solid #2b2620;border-radius:50%;transform:translate(-50%,-50%);background:rgba(217,207,191,.55);pointer-events:none}
@@ -66,6 +73,7 @@ button:active{opacity:.7}
 <canvas id="ov"></canvas>
 <div id="micdot" title="micro : volume et hauteur seulement, rien n'est enregistré"></div>
 <div id="hint"></div>
+<div id="prog"><i></i></div>
 <button id="go" class="pri"></button>
 <div id="card"><div class="box" id="box"></div></div>
 <script>
@@ -388,16 +396,19 @@ ${new URLSearchParams(location.search).get('src')==='offert'?`<p class="small" s
  <p class="small">Variante B (essai) : des couleurs au choix, un geste qui laisse sa trace, trois façons de finir.</p>`
 ];
 let proI=0;
+(()=>{let x0=null;card.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;},{passive:true});card.addEventListener('touchend',e=>{if(x0===null||act!==ACT.PRO)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>70){proI=clamp(proI+(dx<0?1:-1),0,PRO.length-1);renderPro();}},{passive:true});})();
 function renderPro(){
   const last=proI===PRO.length-1;
   const btns=last?`<div class="row"><button class="pri" data-a="start-mic">Commencer, avec la voix</button><button data-a="start-nomic">Commencer, au doigt seul</button></div>`
                  :`<div class="row"><button class="pri" data-a="next">Continuer</button></div>`;
   setTimeout(startAvis,50);
-  showCard(PRO[proI]+btns+`<div class="dots">${PRO.map((_,i)=>i===proI?'●':'○').join(' ')}</div>`);
+  showCard(PRO[proI]+btns+(proI>0?`<div><button class="prev" data-a="prev">‹ Précédent</button></div>`:'')+`<div class="dots">${PRO.map((_,i)=>`<span data-a="goto" data-i="${i}" aria-label="étape ${i+1}">${i===proI?'●':'○'}</span>`).join(' ')}</div>`);
 }
 card.addEventListener('click',e=>{
   const a=e.target&&e.target.getAttribute&&e.target.getAttribute('data-a'); if(!a)return;
-  if(a==='next'){proI++;renderPro();}
+  if(a==='next'){proI=Math.min(proI+1,PRO.length-1);renderPro();}
+  else if(a==='prev'){proI=Math.max(proI-1,0);renderPro();}
+  else if(a==='goto'){proI=+e.target.getAttribute('data-i')||0;renderPro();}
   else if(a==='start-mic'||a==='start-nomic'){useMic=a==='start-mic';audioStart();if(useMic){micWarm().then(toAmbiance);}else toAmbiance();}
   else if(a==='amb-ok'){ambOk();}
   else if(a==='amb'){toAmbiance();}
@@ -430,7 +441,7 @@ function toAmbiance(){
   const cs=COLS.map((c,i)=>{const t=palR.length?0:0;return `rgb(${[0,1,2].map(j=>Math.round(255*Math.exp(-[palR,palG,palB][j][i*16+8]))).join(',')})`;});
   showCard(`<h2>Des couleurs</h2>
    <p class="small">Toucher le carré pour choisir. Un coin, une seule couleur${NB}; un bord, deux${NB}; le centre, les quatre. Elles ne se mélangent pas${NB}: chaque contact en dépose une, tour à tour.</p>
-   <div id="sqWrap"><div id="sq"><i class="cn" style="left:0;top:0;background:${cs[0]}"></i><i class="cn" style="left:100%;top:0;background:${cs[1]}"></i><i class="cn" style="left:0;top:100%;background:${cs[2]}"></i><i class="cn" style="left:100%;top:100%;background:${cs[3]}"></i><b id="sqDot"></b>
+   <div id="sqWrap"><div id="sq"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 0H100V100H0Z M0 0L100 100M100 0L0 100" fill="none" stroke="rgba(43,38,32,.3)" stroke-width="1" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/></svg><i class="pt" style="left:50%;top:0"></i><i class="pt" style="left:0;top:50%"></i><i class="pt" style="left:100%;top:50%"></i><i class="pt" style="left:50%;top:100%"></i><i class="pt" style="left:50%;top:50%"></i><i class="cn" style="left:0;top:0;background:${cs[0]}"></i><i class="cn" style="left:100%;top:0;background:${cs[1]}"></i><i class="cn" style="left:0;top:100%;background:${cs[2]}"></i><i class="cn" style="left:100%;top:100%;background:${cs[3]}"></i><b id="sqDot"></b>
    <span class="nm" style="left:22px;top:-2.2em">${COLS[0][0]}</span><span class="nm" style="right:22px;top:-2.2em">${COLS[1][0]}</span><span class="nm" style="left:22px;bottom:-2.4em">${COLS[2][0]}</span><span class="nm" style="right:22px;bottom:-2.4em">${COLS[3][0]}</span></div>
    <div id="sqSide"><p id="sqTxt" style="font-style:italic;font-size:1.2rem;margin:0 0 .8em"></p><button class="pri" id="ambBtn" data-a="amb-ok">Valider ces couleurs</button></div></div>`,'peek');
   const sq=document.getElementById('sq');
@@ -655,6 +666,9 @@ function step(){
 
 /* ───────── superpositions (anneaux, souffle, doigts) ───────── */
 function drawOv(){
+  { const pg=document.getElementById('prog');let f=-1;const t=simT-actT0;
+    if(act===ACT.PAUSE)f=t/D.pause;else if(act===ACT.GESTE)f=t/D.geste;else if(act===ACT.POSE)f=t/D.pose;
+    pg.style.opacity=f>=0?1:0;if(f>=0)pg.firstChild.style.width=(clamp(f,0,1)*100)+'%'; }
   octx.clearRect(0,0,vw,vh);
   if(act===ACT.MUR||act===ACT.PAUSE){
     for(const m of marks){const age=simT-m.t,pul=1+.12*Math.sin(simT*2.2+m.x);
