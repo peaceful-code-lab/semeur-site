@@ -63,8 +63,8 @@ a.couv span{display:block;font-size:.8rem;color:var(--soft);margin-top:.7em}
 .raise{opacity:0;animation:fi 1.6s ease 8s forwards;position:fixed;right:5vw;bottom:calc(5vh + env(safe-area-inset-bottom));display:inline-block;padding:.8em 1.3em;background:linear-gradient(#e8decb,#d3c7ae);color:#2b2620;border:1px solid #8a7a5a;border-radius:6px;box-shadow:0 2px 0 #8a7a5a,0 7px 16px rgba(43,38,32,.28),inset 0 1px 0 rgba(255,255,255,.55);text-decoration:none;font-size:1.05rem}
 .raise:active{transform:translateY(2px);box-shadow:0 0 0 #8a7a5a,0 3px 8px rgba(43,38,32,.28)}
 @media(prefers-reduced-motion:reduce){.word{animation:none;fill:#c9982f;stroke-dashoffset:0}.vol{animation:none;stroke-dashoffset:0}.endtxt,.raise{animation:none;opacity:1}}
-#prog{position:fixed;left:0;right:0;bottom:0;height:3px;pointer-events:none;z-index:6;opacity:0;transition:opacity .6s}
-#prog i{display:block;height:100%;width:0;background:rgba(43,38,32,.5)}
+#prog{position:fixed;left:0;right:0;bottom:0;height:9px;padding-bottom:env(safe-area-inset-bottom);box-sizing:content-box;background:rgba(43,38,32,.14);pointer-events:none;z-index:6;opacity:0;transition:opacity .6s}
+#prog i{display:block;height:9px;width:0;background:rgba(43,38,32,.72)}
 .dots span{cursor:pointer;padding:.5em .15em}
 .prev{margin-top:.8em;font-size:.95rem;min-height:40px;border-color:transparent;color:var(--soft)}
 #sq .cn{position:absolute;width:34px;height:34px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 1px 3px rgba(0,0,0,.35)}
@@ -722,7 +722,7 @@ function drawOv(){
     for(const q of ptr.values()){const fat=Math.max(.25,Math.exp(-q.c/5));
       octx.beginPath();octx.arc(q.x*kx,q.y*ky,10+16*fat,0,6.2832);octx.strokeStyle='rgba(43,38,32,.4)';octx.lineWidth=1.5;octx.stroke();
       if(mic.on&&mic.loud>.05){octx.beginPath();octx.arc(q.x*kx,q.y*ky,10+16*fat+70*mic.loud,0,6.2832);octx.strokeStyle=`rgba(122,74,34,${.2+.5*mic.loud})`;octx.lineWidth=1+4*mic.loud;octx.stroke();}}
-    if(mic.on){octx.fillStyle=`rgba(122,74,34,${.25+.6*mic.loud})`;octx.fillRect(vw*(.5-.3*mic.loud),vh-5,vw*.6*mic.loud,3);}
+    if(mic.on){octx.fillStyle=`rgba(122,74,34,${.25+.6*mic.loud})`;octx.fillRect(vw*(.5-.3*mic.loud),vh-20,vw*.6*mic.loud,4);}
     const md=$('#micdot');if(mic.on){md.style.transform=`scale(${1+3*mic.loud})`;}
   }
 }
