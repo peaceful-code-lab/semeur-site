@@ -608,7 +608,8 @@ function showEnd(){
   const vol=`<path class="vol a" pathLength="1" d="M320 236 C370 248 430 248 480 234 C515 224 540 204 532 182 C526 164 502 164 498 181 C495 194 507 201 516 195"/><path class="vol b" pathLength="1" d="M512 94 C534 78 566 82 574 106 C580 124 562 134 551 124 C543 116 550 106 558 110"/><path class="vol c" pathLength="1" d="M320 236 C320 256 316 270 304 282 M312 266 C298 262 290 266 288 274 C298 278 308 274 312 266"/>`;
   showCard(`<div class="endwrap"><svg viewBox="0 0 640 330" role="img" aria-label="Semeur"><g>${vol}</g><g transform="translate(640,0) scale(-1,1)">${vol.replace(/ c"/g,' c"')}</g><text class="word" x="320" y="190" text-anchor="middle">Semeur</text></svg>
    <p class="small endtxt">Ce qui est apparu n'existe plus que dans la mémoire de celui ou celle qui l'a vu. Rien de ce que vous avez fait ici n'a été gardé ni envoyé.</p>
-   <div class="row endtxt" style="justify-content:center"><button data-a="again">Recommencer</button></div></div>
+   <div class="row endtxt" style="justify-content:center"><button data-a="again">Recommencer</button></div>
+   <p class="small endtxt" style="margin-top:1.4em">Une pièce de <a id="pcLink" href="https://www.peacefulcode.com/" target="_blank" rel="noopener" style="color:inherit">Peaceful${NB}Code</a></p></div>
    <a class="raise" href="${href}" target="_blank" rel="noopener">D'autres aventures arrivent</a>`,'end');
 }
 function vanish(){
