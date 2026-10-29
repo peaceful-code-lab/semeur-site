@@ -65,6 +65,9 @@ a.couv span{display:block;font-size:.8rem;color:var(--soft);margin-top:.7em}
 @media(prefers-reduced-motion:reduce){.word{animation:none;fill:#c9982f;stroke-dashoffset:0}.vol{animation:none;stroke-dashoffset:0}.endtxt,.raise{animation:none;opacity:1}}
 #prog{position:fixed;left:0;right:0;bottom:0;height:9px;padding-bottom:env(safe-area-inset-bottom);box-sizing:content-box;background:rgba(43,38,32,.14);pointer-events:none;z-index:6;opacity:0;transition:opacity .6s}
 #prog i{display:block;height:9px;width:0;background:rgba(43,38,32,.72)}
+#ctl{position:fixed;right:14px;top:50px;z-index:20;display:none;gap:.5rem;flex-direction:column;align-items:flex-end}
+#ctl button{min-height:40px;font-size:.9rem;padding:.4em .9em;background:rgba(217,207,191,.8);border-color:rgba(43,38,32,.5)}
+#ctl #more{display:none;border-style:dashed}
 .dots span{cursor:pointer;padding:.5em .15em}
 .prev{margin-top:.8em;font-size:.95rem;min-height:40px;border-color:transparent;color:var(--soft)}
 #sq .cn{position:absolute;width:34px;height:34px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 1px 3px rgba(0,0,0,.35)}
@@ -92,6 +95,7 @@ button:active{opacity:.7}
 <div id="prog"><i></i></div>
 <div id="step"></div>
 <button id="go" class="pri"></button>
+<div id="ctl"><button id="more">Plus de temps</button><button id="skip">Continuer ›</button></div>
 <div id="card"><div class="box" id="box"></div></div>
 <script>
 (()=>{
@@ -376,6 +380,7 @@ function micFrame(){
 const ACT={PRO:0,CADRE:1,MUR:2,PAUSE:3,GESTE:4,POSE:5,FIN:6,AMB:7};
 let act=ACT.PRO,actT0=0,simT=0,coolV=0,useMic=false,frozen=false,code='';
 const D={mur:75*DUR,pause:45*DUR,geste:150*DUR,pose:36*DUR};
+let ext=0,extN=0;
 const marks=[],ptr=new Map(),events=[];
 let touchE=0,lastTouch=null,curShade=8,curCol=0,goShown=false;
 const hueNow=()=>curCol*16+clamp(Math.round(curShade),0,15);
@@ -485,7 +490,7 @@ function toMur(){
   setHint(`Regarder le mur, patiemment (30 secondes à une minute). Quand quelque chose apparaît — un visage, un animal, un paysage — toucher là. Sept fois au plus.`);
 }
 function toPause(){
-  act=ACT.PAUSE;actT0=simT;goShown=false;setGo();setHint(`Laisser le mur travailler.`);
+  asking=false;act=ACT.PAUSE;actT0=simT;goShown=false;setGo();setHint(`Laisser le mur travailler.`);
   for(const m of marks){spawn(m.x,m.y,Math.round(1100*AF),m.h,-1,0,2000);addFood(m.x,m.y,10,K.FOOD*2);}
   ambient(true);schedBell();
 }
@@ -496,17 +501,18 @@ function schedBell(){
   const f=BASEF*Math.pow(2,SEMI[Math.floor(rnd2()*10)]/12);bell(f,.12+.1*rnd2(),5+4*rnd2());
   bellTimer=setTimeout(schedBell,(1800+3800*rnd2())/Math.min(SPEED,6));
 }
+let asking=false;
 function askVoice(){
-  setGo();setHint();
+  asking=true;setGo();setHint();
   showCard(`<h2>Le geste</h2>
    <p>Maintenant, on sème. Le doigt dépose les couleurs choisies, et la matière suit la direction de son mouvement.</p>
    <p>La voix peut aussi agir, sans mots${NB}: le volume, la hauteur et le souffle changent ce qui pousse. Le micro n'enregistre rien et n'envoie rien. On peut aussi s'en passer.</p>
    <div class="row"><button class="pri" data-a="voice-yes">Avec la voix</button><button data-a="voice-no">Au doigt seul</button></div>`,true);
 }
 async function toGeste(){
-  setGo();ambient(false);clearTimeout(bellTimer);
+  asking=false;setGo();ambient(false);clearTimeout(bellTimer);
   let ok=false; if(useMic)ok=await micStart();
-  act=ACT.GESTE;actT0=simT;goShown=false;
+  act=ACT.GESTE;actT0=simT;goShown=false;ext=0;extN=0;
   $('#micdot').style.opacity=ok?.8:0;
   setHint(ok?`Semer (on ne dessine pas : la matière répond à sa façon, et suit la direction du doigt). La voix — souffle, murmure, chant, sans mots — change ce qui pousse.`
             :`Semer : le doigt dépose des graines.${useMic?(mic.err==='NotAllowedError'||mic.err==='SecurityError'?' (Micro refusé : on continue au doigt. Pour l\'activer sur iPad : Réglages, Safari, Sites web, Microphone.)':' (Le micro est indisponible : on continue au doigt.)'):''}`);
@@ -677,7 +683,7 @@ function step(){
     if(mic.on&&!silentWarned){if(mic.loud>.03)silentWarned=true;else if(simT-silentT0>12){silentWarned=true;setHint(`Le micro est actif mais ne capte rien pour l'instant${NB}: parler ou souffler près de l'appareil. (iPad${NB}: Réglages, Safari, Microphone.)`);}}
     if((stepN%12)===0&&mic.on)events.push(['v',Math.round(mic.loud*9),Math.round(mic.hueS*9)]);
     if(!goShown&&t>45*DUR){goShown=true;setGo('Laisser reposer',toPose);}
-    if(t>D.geste)toPose();
+    if(t>D.geste+ext)toPose();
   }else if(act===ACT.PAUSE){
     if((stepN%300)===0)for(const m of marks)spawn(m.x,m.y,Math.round(60*AF),m.h,-1,0,900);
     if(t>D.pause&&!goShown){goShown=true;setHint(`Quand on veut : reprendre.`);setGo('Reprendre',askVoice);}
@@ -700,12 +706,39 @@ function step(){
   if((stepN&3)===0){for(let i=0;i<NPX;i++)food[i]*=.985;}
 }
 
+/* ───────── commandes permanentes : continuer, plus de temps ───────── */
+const ctl=$('#ctl'),skipB=$('#skip'),moreB=$('#more');
+function skipAct(){
+  if(act===ACT.MUR)toPause();
+  else if(act===ACT.PAUSE){if(!asking){clearTimeout(bellTimer);askVoice();}}
+  else if(act===ACT.GESTE)toPose();
+  else if(act===ACT.POSE&&!frozen){coolV=1;dryV=1;toFin();}
+}
+async function moreTime(){
+  if(extN>=5)return;
+  if(act===ACT.GESTE){extN++;ext+=60*DUR;}
+  else if(act===ACT.POSE&&!frozen){
+    extN++;ext+=60*DUR;coolV=0;dryV=0;setGo();
+    let ok=false;if(useMic)ok=await micStart();
+    act=ACT.GESTE;actT0=simT-(D.geste+ext-60*DUR);goShown=false;
+    $('#micdot').style.opacity=ok?.8:0;silentWarned=true;
+    setHint(`On continue : encore un peu de temps.`);
+  }
+}
+skipB.addEventListener('click',skipAct);moreB.addEventListener('click',moreTime);
+function syncCtl(){
+  const on=act===ACT.MUR||(act===ACT.PAUSE&&!asking)||act===ACT.GESTE||act===ACT.POSE;
+  const d=on&&!frozen?'flex':'none';if(ctl.style.display!==d)ctl.style.display=d;
+  const m=(act===ACT.GESTE||act===ACT.POSE)&&extN<5?'block':'none';if(moreB.style.display!==m)moreB.style.display=m;
+}
+
 /* ───────── superpositions (anneaux, souffle, doigts) ───────── */
 function drawOv(){
+  syncCtl();
   { const st=document.getElementById('step'),L={[ACT.AMB]:'1 · Couleurs',[ACT.CADRE]:'2 · Les règles',[ACT.MUR]:'3 · Le mur',[ACT.PAUSE]:'4 · La pause',[ACT.GESTE]:'5 · Le geste',[ACT.POSE]:'5 · Le geste, ça repose'},lab=L[act];
     if(lab){if(st.dataset.l!==lab){st.dataset.l=lab;st.textContent='Étape '+lab.replace(' · ',' sur 5 · ');}st.style.opacity=1;}else st.style.opacity=0; }
   { const pg=document.getElementById('prog');let f=-1;const t=simT-actT0;
-    if(act===ACT.PAUSE)f=t/D.pause;else if(act===ACT.GESTE)f=t/D.geste;else if(act===ACT.POSE)f=t/D.pose;
+    if(act===ACT.PAUSE)f=t/D.pause;else if(act===ACT.GESTE)f=t/(D.geste+ext);else if(act===ACT.POSE)f=t/D.pose;
     pg.style.opacity=f>=0?1:0;if(f>=0)pg.firstChild.style.width=(clamp(f,0,1)*100)+'%'; }
   octx.clearRect(0,0,vw,vh);
   if(act===ACT.MUR||act===ACT.PAUSE){
