@@ -25,3 +25,9 @@ Constat : seuls GESTE et POSE avancent seuls. Tout le reste attend le visiteur. 
 - `#skip` « Continuer › » : toujours visible en MUR, PAUSE, GESTE, POSE (en haut à droite, sous « ← Semeur »). Effet : MUR → `toPause` (même sans repère) ; PAUSE → `askVoice` ; GESTE → `toPose` ; POSE → `toFin`. Les sorties normales (`#go`) restent.
 - `#more` « Plus de temps » : visible en GESTE et POSE. GESTE : +60 s par appui (le délai auto passe à 150 + 60·n, n ≤ 5, la barre suit). POSE : revient au geste avec 60 s de plus (le micro, si choisi, est ré-ouvert, sans nouvelle demande). MUR et PAUSE n'ont pas de délai : on y reste aussi longtemps qu'on veut.
 - Le parcours normal (sans appui) est inchangé.
+
+## Trait libre, palette, tests (mur-v3)
+
+- Geste : plus de consigne « dessiner ». Doigt posé (vitesse < 0,35) 2,5 s : le trait est coupé et un nouveau commence (fatigue remise à zéro, couleur suivante). Entre-temps le doigt immobile ne dépose plus rien après 0,5 s.
+- Palette : deux couleurs au plus (coin = 1, bord ou centre = 2).
+- Logique pure : `public/le-mur/moteur.js`. Tests : `npm test` (node:test, 32 scénarios) ; parcours : `npm run test:parcours` (Playwright, Chromium headless, 17 vérifications dont CPU/mémoire). Non testé : iPad, Safari, tactile réel, micro, son, rendu visuel.

@@ -1,0 +1,11 @@
+{
+  "name": "semeur-site",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "test:parcours": "node tests/parcours.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.64.1"
+  }
+}

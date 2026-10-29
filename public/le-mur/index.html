@@ -779,7 +779,7 @@ ctx.putImageData(img,0,0);
 renderPro();
 requestAnimationFrame(frame);
 window.__lab={showEnd,K,step:n=>{for(let k=0;k<n;k++)step();},render,spawn,addFood,addMark,toMur,toPause,toGeste:()=>{act=ACT.GESTE;actT0=simT;},toPose,P,setHue:h=>{curShade=h%16;curCol=(h/16)|0;},drip:()=>{},png:()=>{render();return cv.toDataURL('image/png');},ptr,get coolV(){return coolV},set coolV(v){coolV=v;},set dry(v){dryV=v;},set dim(v){dimV=v;},ACT,time:()=>simT};
-window.__piece={get act(){return act;},get t(){return simT;},get fps(){return fps;},mic,get marks(){return marks.length;},W,H,MAXN,agents:()=>{let n=0;for(let i=0;i<MAXN;i++)if(al[i]>0)n++;return n;},cover:()=>{let n=0;for(let i=0;i<NPX;i++)if(aR[i]+aG[i]+aB[i]>.25)n++;return n/NPX;}};
+window.__piece={get act(){return act;},strokes:()=>{let n=0;for(const q of ptr.values())n=Math.max(n,q.s?q.s.strokes:0);return n;},get t(){return simT;},get fps(){return fps;},mic,get marks(){return marks.length;},W,H,MAXN,agents:()=>{let n=0;for(let i=0;i<MAXN;i++)if(al[i]>0)n++;return n;},cover:()=>{let n=0;for(let i=0;i<NPX;i++)if(aR[i]+aG[i]+aB[i]>.25)n++;return n/NPX;}};
 })();
 </script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "62a6ea4d3a3442f9ab3ec0eda27c291a"}'></script><!-- End Cloudflare Web Analytics -->

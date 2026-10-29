@@ -68,7 +68,7 @@
     let fresh = false;
     if (speed < STILL_SPEED) {
       s.still += dt;
-      if (s.still >= CUT_S) { s.still = 0; s.strokes++; s.age = 0; s.dist = 0; fresh = true; }
+      if (s.still >= CUT_S - 1e-6) { s.still = 0; s.strokes++; s.age = 0; s.dist = 0; fresh = true; }
     } else {
       s.still = 0;
       s.dist += speed;
