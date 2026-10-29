@@ -440,6 +440,7 @@ card.addEventListener('click',e=>{
   else if(a==='vanish'){vanish();}
   else if(a==='enter'){hideCard();toMur();}
   else if(a==='save'){savePNG();}
+  else if(a.startsWith('hd-')){exportHD(a.slice(3));}
   else if(a==='how'){showHow();}
   else if(a==='avis'){showAvisForm();}
   else if(a==='avis-send'){avisSend();}
@@ -564,6 +565,8 @@ function showFin(){
    <p class="small">Couleurs${NB}: ${colSummary()} · ${gestureSummary()}.</p>
    <p>Ce qui est apparu vient de ce qui a été vu, essayé et soufflé — et de ce que le mur portait déjà.</p>
    ${location.protocol.startsWith('http')?`<a class="couv" href="../assets/faire-apparaitre-v1.4.pdf" target="_blank" rel="noopener" aria-label="Lire le livre Faire apparaître (PDF)"><img src="../assets/couv.jpg" alt="Couverture du livre Faire apparaître"><span>Le livre — lire (PDF, version de travail : vérification des citations en cours)</span></a>`:''}<p class="small">Si vous voulez${NB}:</p><div class="row" style="margin-top:.4em"><button class="pri" data-a="save">Garder l'image</button><button class="pri" data-a="offer">Offrir</button></div>
+   <p class="small" style="margin-top:1em">Pour l${NB}'imprimer (haute définition, 300${NB}dpi)${NB}:</p><div class="row" style="margin-top:.4em"><button class="pri" data-a="hd-A4">Télécharger A4</button><button class="pri" data-a="hd-A3">Télécharger A3</button></div>
+   <p class="small" id="hdM" role="status" style="min-height:1.4em;margin:.5em 0 0"></p>
    <p class="small" id="offerM" style="min-height:1.4em;margin:.5em 0 0"></p>
    <p class="small" style="margin-top:1em">Pour finir${NB}:</p><div class="row" style="margin-top:.4em"><button data-a="vanish">Laisser disparaître</button></div>
    <div class="row" style="margin-top:1.2em">${AVIS_URL?`<button data-a="avis">Laisser un mot</button>`:''}<button data-a="seeonly">Voir seule</button><button data-a="how">Comment c'est fait</button><button data-a="again">Recommencer</button></div>`,true);
@@ -629,6 +632,79 @@ function savePNG(){
   c.fillStyle='#2b2620';c.font='italic 17px Georgia,serif';c.textBaseline='middle';
   c.fillText(`Ce qui lève — N° ${code} — Semeur (agent IA) avec un visiteur — Peaceful Code`,14,fc.height-17);
   const a=document.createElement('a');a.download=`ce-qui-leve-${code}.png`;a.href=fc.toDataURL('image/png');document.body.appendChild(a);a.click();a.remove();
+}
+
+/* ───────── export haute définition (impression) ─────────
+   Le tableau est un champ de pigment (aR,aG,aB) posé sur un mur (wr,wg,wb), simulé en ~640 px.
+   On ne l'agrandit pas comme une image : on le redessine à la taille cible, pixel par pixel, en
+   interpolant les CHAMPS (Catmull-Rom, plus net qu'un lissage bilinéaire), puis en appliquant la même
+   formule de couleur qu'à l'écran (exp(-absorption) sur le mur) et un grain de papier fin.
+   Le détail de la simulation ne peut pas dépasser sa résolution : on gagne en netteté de reconstruction, pas en détails inventés. */
+
+/* ► POINT D'ACCROCHE UNIQUE des comptes (à venir) : tout téléchargement HD passe ici.
+     Plus tard : exiger l'inscription / le paiement ici (renvoyer false pour refuser, après avoir affiché l'invite).
+     Aujourd'hui : gratuit, sans compte. */
+async function exportGate(fmt){ return true; }
+
+const exportEnv=()=>{
+  const ua=navigator.userAgent||'';
+  const mobile=/Android|iPhone|iPad|iPod|Mobile|Silk/i.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
+  const q=Q.get('hdenv');   // essais : ?hdenv=mobile  |  ?hdenv=mem2
+  return {mobile:mobile||q==='mobile', memGB:q==='mem2'?2:(navigator.deviceMemory!=null?navigator.deviceMemory:null)};
+};
+function paperGrain(x,y,s){let h=Math.imul(x,374761393)^Math.imul(y,668265263)^s;h=Math.imul(h^h>>>13,1274126177);h^=h>>>16;return((h>>>0)/4294967296-.5);}
+async function hdCanvas(fmt,opts){
+  opts=opts||{};const L=Moteur.exportLayout(fmt,W,H),grain=opts.grain!=null?opts.grain:7;
+  const fc=document.createElement('canvas');fc.width=L.pw;fc.height=L.ph;
+  const c=fc.getContext('2d');if(!c)throw new Error('canevas indisponible');
+  c.fillStyle='rgb(217,207,191)';c.fillRect(0,0,L.pw,L.ph);
+  const iw=L.iw,ih=L.ih,s=L.scale,F=[wr,wg,wb,aR,aG,aB];
+  const ix=new Int32Array(iw*4),wx=new Float32Array(iw*4),tw=[0,0,0,0];
+  for(let X=0;X<iw;X++){const sx=(X+.5)/s-.5,x1=Math.floor(sx);Moteur.catmull(sx-x1,tw);
+    for(let k=0;k<4;k++){ix[X*4+k]=clamp(x1-1+k,0,W-1);wx[X*4+k]=tw[k];}}
+  const SH=48,strip=c.createImageData(iw,SH),d=strip.data,rows=F.map(()=>new Float32Array(W));
+  const g=(1+.25*dryV)*pigK,wk=wallK,wi=1-wk,dim=dimV,gs=WSEED|0;
+  for(let Y0=0;Y0<ih;Y0+=SH){
+    const n=Math.min(SH,ih-Y0);
+    for(let r=0;r<n;r++){const Y=Y0+r,sy=(Y+.5)/s-.5,y1=Math.floor(sy);Moteur.catmull(sy-y1,tw);
+      const o=[0,1,2,3].map(k=>clamp(y1-1+k,0,H-1)*W);
+      for(let f=0;f<6;f++){const a=F[f],b=rows[f];for(let x=0;x<W;x++)b[x]=tw[0]*a[o[0]+x]+tw[1]*a[o[1]+x]+tw[2]*a[o[2]+x]+tw[3]*a[o[3]+x];}
+      for(let X=0;X<iw;X++){const j=(r*iw+X)*4,q=X*4,i0=ix[q],i1=ix[q+1],i2=ix[q+2],i3=ix[q+3],w0=wx[q],w1=wx[q+1],w2=wx[q+2],w3=wx[q+3];
+        const gn=grain?paperGrain(X,Y,gs)*grain:0;
+        let wrv=w0*rows[0][i0]+w1*rows[0][i1]+w2*rows[0][i2]+w3*rows[0][i3];
+        let wgv=w0*rows[1][i0]+w1*rows[1][i1]+w2*rows[1][i2]+w3*rows[1][i3];
+        let wbv=w0*rows[2][i0]+w1*rows[2][i1]+w2*rows[2][i2]+w3*rows[2][i3];
+        let ar=w0*rows[3][i0]+w1*rows[3][i1]+w2*rows[3][i2]+w3*rows[3][i3];
+        let ag=w0*rows[4][i0]+w1*rows[4][i1]+w2*rows[4][i2]+w3*rows[4][i3];
+        let ab=w0*rows[5][i0]+w1*rows[5][i1]+w2*rows[5][i2]+w3*rows[5][i3];
+        if(ar<0)ar=0;if(ag<0)ag=0;if(ab<0)ab=0;
+        d[j]=(wrv*wk+217*wi)*Math.exp(-ar*g)*dim+gn;d[j+1]=(wgv*wk+207*wi)*Math.exp(-ag*g)*dim+gn;d[j+2]=(wbv*wk+191*wi)*Math.exp(-ab*g)*dim+gn;d[j+3]=255;}}
+    c.putImageData(strip,L.x,L.y+Y0,0,0,iw,n);
+    if(opts.onProgress)opts.onProgress((Y0+n)/ih);
+    await new Promise(r=>setTimeout(r,0));
+  }
+  c.fillStyle='#2b2620';c.font=`italic ${L.capFont}px Georgia,serif`;c.textBaseline='middle';
+  c.fillText(`Ce qui lève — N° ${code} — Semeur (agent IA) avec un visiteur — Peaceful Code`,L.x,L.capY+L.capH/2);
+  return fc;
+}
+let hdBusy=false;
+async function exportHD(fmt){
+  const m=document.getElementById('hdM'),say=t=>{if(m)m.textContent=t;};
+  if(hdBusy||act!==ACT.FIN||!code)return;
+  const plan=Moteur.exportPlan(fmt,exportEnv());
+  if(!plan.ok){say(plan.fmt?`${fmt} est trop lourd pour cet appareil (${plan.why}). Le ${plan.fmt} est disponible ; ou ouvrez cette page sur un ordinateur pour le ${fmt}.`:`L'export haute définition n'est pas possible sur cet appareil (${plan.why}). « Garder l'image » reste disponible.`);return;}
+  if(!(await exportGate(fmt)))return;     // comptes à venir : voir exportGate
+  hdBusy=true;say(`Préparation du ${fmt}… 0 %`);
+  try{
+    const fc=await hdCanvas(fmt,{onProgress:p=>say(`Préparation du ${fmt}… ${Math.round(p*100)} %`)});
+    const blob=await new Promise(res=>fc.toBlob(res,'image/png'));
+    fc.width=fc.height=1;   // libère la mémoire du grand canevas
+    if(!blob)throw new Error('png vide');
+    const a=document.createElement('a'),u=URL.createObjectURL(blob);a.download=`ce-qui-leve-${code}-${fmt}.png`;a.href=u;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);
+    say(`${fmt} enregistré (${Moteur.PRINT[fmt].w}×${Moteur.PRINT[fmt].h} px, 300 dpi).`);
+  }catch(e){
+    say(fmt==='A3'?`Cet appareil n'a pas pu produire le A3 (mémoire). Essayez le A4, ou un ordinateur.`:`Cet appareil n'a pas pu produire ce fichier. « Garder l'image » reste disponible.`);
+  }finally{hdBusy=false;}
 }
 
 /* ───────── gestes ───────── */
@@ -778,7 +854,7 @@ for(let i=0;i<NPX;i++){const j=i*4;img.data[j]=wr[i];img.data[j+1]=wg[i];img.dat
 ctx.putImageData(img,0,0);
 renderPro();
 requestAnimationFrame(frame);
-window.__lab={showEnd,K,step:n=>{for(let k=0;k<n;k++)step();},render,spawn,addFood,addMark,toMur,toPause,toGeste:()=>{act=ACT.GESTE;actT0=simT;},toPose,P,setHue:h=>{curShade=h%16;curCol=(h/16)|0;},drip:()=>{},png:()=>{render();return cv.toDataURL('image/png');},ptr,get coolV(){return coolV},set coolV(v){coolV=v;},set dry(v){dryV=v;},set dim(v){dimV=v;},ACT,time:()=>simT};
+window.__lab={hdCanvas,exportHD,showFin,exportEnv,showEnd,K,step:n=>{for(let k=0;k<n;k++)step();},render,spawn,addFood,addMark,toMur,toPause,toGeste:()=>{act=ACT.GESTE;actT0=simT;},toPose,P,setHue:h=>{curShade=h%16;curCol=(h/16)|0;},drip:()=>{},png:()=>{render();return cv.toDataURL('image/png');},ptr,get coolV(){return coolV},set coolV(v){coolV=v;},set dry(v){dryV=v;},set dim(v){dimV=v;},ACT,time:()=>simT};
 window.__piece={get act(){return act;},strokes:()=>{let n=0;for(const q of ptr.values())n=Math.max(n,q.s?q.s.strokes:0);return n;},get t(){return simT;},get fps(){return fps;},mic,get marks(){return marks.length;},W,H,MAXN,agents:()=>{let n=0;for(let i=0;i<MAXN;i++)if(al[i]>0)n++;return n;},cover:()=>{let n=0;for(let i=0;i<NPX;i++)if(aR[i]+aG[i]+aB[i]>.25)n++;return n/NPX;}};
 })();
 </script>
