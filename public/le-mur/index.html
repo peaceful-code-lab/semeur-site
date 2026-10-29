@@ -97,6 +97,7 @@ button:active{opacity:.7}
 <button id="go" class="pri"></button>
 <div id="ctl"><button id="more">Plus de temps</button><button id="skip">Continuer ›</button></div>
 <div id="card"><div class="box" id="box"></div></div>
+<script src="moteur.js"></script>
 <script>
 (()=>{
 'use strict';
@@ -196,18 +197,14 @@ for(let c=0;c<4;c++)for(let k=0;k<16;k++){const t=k/15,b0=COLS[c][1];
 /* choix des couleurs : un carré à quatre coins ; le coin donne une couleur, le bord deux, le centre les quatre */
 const sel={u:.5,v:.5,w:[.25,.25,.25,.25],bag:[]};
 function setSel(u,v){
-  const sn=(x)=>x<.1?0:x>.9?1:Math.abs(x-.5)<.1?.5:x;u=sn(u);v=sn(v);sel.u=u;sel.v=v;
-  let w=[(1-u)*(1-v),u*(1-v),(1-u)*v,u*v];w=w.map(x=>x<.12?0:x);const t=w.reduce((a,b)=>a+b,0)||1;sel.w=w.map(x=>x/t);sel.bag=[];
+  const sn=(x)=>x<.1?0:x>.9?1:Math.abs(x-.5)<.1?.5:x;sel.u=sn(u);sel.v=sn(v);
+  sel.w=Moteur.paletteWeights(u,v);sel.bag=[];   // deux couleurs au plus (moteur.js)
 }
 function nextColor(){
-  if(!sel.bag.length){
-    const pres=sel.w.map((x,i)=>[x,i]).filter(e=>e[0]>0),wm=Math.min(...pres.map(e=>e[0]));
-    for(const [x,i] of pres){const n=Math.max(1,Math.round(x/wm));for(let k=0;k<n&&sel.bag.length<14;k++)sel.bag.push(i);}
-    for(let i=sel.bag.length-1;i>0;i--){const j=(rnd2()*(i+1))|0;[sel.bag[i],sel.bag[j]]=[sel.bag[j],sel.bag[i]];}
-  }
+  if(!sel.bag.length)sel.bag=Moteur.makeBag(sel.w,rnd2);
   return sel.bag.pop();
 }
-const nCols=()=>sel.w.filter(x=>x>0).length;
+const nCols=()=>Moteur.countColors(sel.w);
 setSel(.5,.5);
 
 /* ───────── agents (graines) : un modèle de type Physarum ───────── */
@@ -377,9 +374,9 @@ function micFrame(){
 }
 
 /* ───────── états et durées ───────── */
-const ACT={PRO:0,CADRE:1,MUR:2,PAUSE:3,GESTE:4,POSE:5,FIN:6,AMB:7};
+const ACT=Moteur.ACT;
 let act=ACT.PRO,actT0=0,simT=0,coolV=0,useMic=false,frozen=false,code='';
-const D={mur:75*DUR,pause:45*DUR,geste:150*DUR,pose:36*DUR};
+const D=Moteur.durations(DUR);
 let ext=0,extN=0;
 const marks=[],ptr=new Map(),events=[];
 let touchE=0,lastTouch=null,curShade=8,curCol=0,goShown=false;
@@ -415,8 +412,8 @@ ${new URLSearchParams(location.search).get('src')==='offert'?`<p class="small" s
  <p>Puis il faut <i>ramener</i> ce qu'on a vu à des formes complètes. Voir n'est que la moitié du travail.</p>
  <p class="small">Carnets, n° 508, trad. J. P. Richter, 1883 — traduction libre de la version anglaise.</p>`,
 `<h2>Ce qui va se passer</h2>
- <ol><li><b>Des couleurs</b> — un carré pour choisir, une couleur ou les quatre.</li><li><b>Un cadre</b> — trois règles.</li><li><b>Un mur</b> — on y cherche ce qu'on voit.</li><li><b>Une pause.</b></li><li><b>Un geste</b> — le doigt, la voix (sans mots) : sa trace guidera les flux de couleur.</li><li><b>L'apparition.</b></li></ol>
- <p>Rien à dessiner${NB}: on ne trace pas des formes, on sème, et la matière répond à sa façon. Rien à écrire, personne ne juge.</p>`,
+ <ol><li><b>Des couleurs</b> — un carré pour choisir, une ou deux couleurs.</li><li><b>Un cadre</b> — trois règles.</li><li><b>Un mur</b> — on y cherche ce qu'on voit.</li><li><b>Une pause.</b></li><li><b>Un geste</b> — le doigt, la voix (sans mots) : sa trace guidera les flux de couleur.</li><li><b>L'apparition.</b></li></ol>
+ <p>Chacun fait ce qu'il veut, un trait court ou long${NB}; on essaie, on regarde ce qui répond. Rien à écrire, personne ne juge.</p>`,
 `<h2>Ce qui n'est pas pris</h2>
  <p>Aucune intelligence artificielle ne tourne ici${NB}: seulement un programme, écrit par Semeur, qui travaille sur cet appareil. Le micro n'écoute que le volume et la hauteur de la voix${NB}: ni mots, ni enregistrement, rien n'est envoyé. Il ne sera demandé qu'au moment du geste, et l'on peut s'en passer${NB}: tout marche au doigt. Aucun compte, aucun suivi.</p>
  <p class="small">Variante B (essai) : des couleurs au choix, un geste qui laisse sa trace, trois façons de finir.</p>`
@@ -467,7 +464,7 @@ function toAmbiance(){
   act=ACT.AMB;setHint();setGo();
   const cs=COLS.map((c,i)=>{const t=palR.length?0:0;return `rgb(${[0,1,2].map(j=>Math.round(255*Math.exp(-[palR,palG,palB][j][i*16+8]))).join(',')})`;});
   showCard(`<h2>Des couleurs</h2>
-   <p class="small">Toucher le carré pour choisir. Un coin, une seule couleur${NB}; un bord, deux${NB}; le centre, les quatre. Elles ne se mélangent pas${NB}: chaque contact en dépose une, tour à tour.</p>
+   <p class="small">Toucher le carré pour choisir. Un coin, une seule couleur${NB}; un bord ou le centre, deux. Elles ne se mélangent pas${NB}: chaque trait en dépose une, tour à tour.</p>
    <div id="sqWrap"><div id="sq"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 0H100V100H0Z M0 0L100 100M100 0L0 100" fill="none" stroke="rgba(43,38,32,.3)" stroke-width="1" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/></svg><i class="pt" style="left:50%;top:0"></i><i class="pt" style="left:0;top:50%"></i><i class="pt" style="left:100%;top:50%"></i><i class="pt" style="left:50%;top:100%"></i><i class="pt" style="left:50%;top:50%"></i><i class="cn" style="left:0;top:0;background:${cs[0]}"></i><i class="cn" style="left:100%;top:0;background:${cs[1]}"></i><i class="cn" style="left:0;top:100%;background:${cs[2]}"></i><i class="cn" style="left:100%;top:100%;background:${cs[3]}"></i><b id="sqDot"></b>
    <span class="nm" style="left:22px;top:-2.2em">${COLS[0][0]}</span><span class="nm" style="right:22px;top:-2.2em">${COLS[1][0]}</span><span class="nm" style="left:22px;bottom:-2.4em">${COLS[2][0]}</span><span class="nm" style="right:22px;bottom:-2.4em">${COLS[3][0]}</span></div>
    <div id="sqSide"><p id="sqTxt" style="font-style:italic;font-size:1.2rem;margin:0 0 .8em"></p><button class="pri" id="ambBtn" data-a="amb-ok">Valider ces couleurs</button></div></div>`,'peek');
@@ -514,8 +511,8 @@ async function toGeste(){
   let ok=false; if(useMic)ok=await micStart();
   act=ACT.GESTE;actT0=simT;goShown=false;ext=0;extN=0;
   $('#micdot').style.opacity=ok?.8:0;
-  setHint(ok?`Semer (on ne dessine pas : la matière répond à sa façon, et suit la direction du doigt). La voix — souffle, murmure, chant, sans mots — change ce qui pousse.`
-            :`Semer : le doigt dépose des graines.${useMic?(mic.err==='NotAllowedError'||mic.err==='SecurityError'?' (Micro refusé : on continue au doigt. Pour l\'activer sur iPad : Réglages, Safari, Sites web, Microphone.)':' (Le micro est indisponible : on continue au doigt.)'):''}`);
+  setHint(ok?`Poser le doigt, tracer, s'arrêter, recommencer : essayer. Un doigt immobile quelques secondes coupe le trait, un autre commence. La voix — souffle, murmure, chant, sans mots — change ce qui pousse.`
+            :`Essayer : le doigt dépose des graines, un trait après l'autre.${useMic?(mic.err==='NotAllowedError'||mic.err==='SecurityError'?' (Micro refusé : on continue au doigt. Pour l\'activer sur iPad : Réglages, Safari, Sites web, Microphone.)':' (Le micro est indisponible : on continue au doigt.)'):''}`);
   silentT0=simT;silentWarned=false;
 }
 function toPose(){
@@ -565,7 +562,7 @@ function showFin(){
   const d=new Date(),ds=d.toLocaleDateString('fr-CH');
   showCard(`<h2>Ce qui lève</h2><p class="small">N°${NB}${code} · ${ds}</p>
    <p class="small">Couleurs${NB}: ${colSummary()} · ${gestureSummary()}.</p>
-   <p>Rien n'a été dessiné. Ce qui est apparu vient de ce qui a été vu, semé et soufflé — et de ce que le mur portait déjà.</p>
+   <p>Ce qui est apparu vient de ce qui a été vu, essayé et soufflé — et de ce que le mur portait déjà.</p>
    ${location.protocol.startsWith('http')?`<a class="couv" href="../assets/faire-apparaitre-v1.4.pdf" target="_blank" rel="noopener" aria-label="Lire le livre Faire apparaître (PDF)"><img src="../assets/couv.jpg" alt="Couverture du livre Faire apparaître"><span>Le livre — lire (PDF, version de travail : vérification des citations en cours)</span></a>`:''}<p class="small">Si vous voulez${NB}:</p><div class="row" style="margin-top:.4em"><button class="pri" data-a="save">Garder l'image</button><button class="pri" data-a="offer">Offrir</button></div>
    <p class="small" id="offerM" style="min-height:1.4em;margin:.5em 0 0"></p>
    <p class="small" style="margin-top:1em">Pour finir${NB}:</p><div class="row" style="margin-top:.4em"><button data-a="vanish">Laisser disparaître</button></div>
@@ -576,7 +573,7 @@ function showHow(){
   <ul>
   <li><b>Le mur${NB}:</b> des taches par bruit fractal, avec bords, liserés, coulures et strates (graine${NB}${(WSEED>>>0).toString(36).toUpperCase()}).</li>
   <li><b>Les graines${NB}:</b> des milliers de petits agents suivent des traces et en laissent, comme le moisi jaune <i>Physarum</i> (modèle de Jeff Jones, 2010). Ce qu'on a touché sur le mur les attire.</li>
-  <li><b>Les couleurs${NB}:</b> quatre, qui ne se mélangent jamais${NB}; chaque contact en dépose une, tour à tour, et elle change le long d'un long trait.</li>
+  <li><b>Les couleurs${NB}:</b> quatre au choix, deux au plus à la fois, qui ne se mélangent jamais${NB}; chaque trait en dépose une, tour à tour.</li>
   <li><b>Le geste est un vecteur${NB}:</b> la vitesse, la direction et l'amplitude du doigt forment un champ de directions que les flux de couleur suivent.</li>
   <li><b>Le doigt</b> sème${NB}; <b>la voix</b> règle l'énergie (volume), la couleur (hauteur), la finesse (timbre) et les coulures (attaques). Aucun mot n'est reconnu.</li>
   <li><b>Votre image, votre voix et vos gestes ne sont ni envoyés ni enregistrés.</b> Tout tourne ici, sans IA. Seule la visite de la page est comptée, de façon anonyme.</li>
@@ -636,7 +633,7 @@ function savePNG(){
 /* ───────── gestes ───────── */
 function toSim(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H};}
 function addMark(x,y){
-  if(marks.length>=7)return;
+  if(marks.length>=Moteur.MAX_MARKS)return;
   const h=nextColor()*16+clamp(Math.round(4+(1-y/H)*8),0,15);
   marks.push({x,y,h,t:simT,r:0});addFood(x,y,9,K.FOOD);bell(noteFor(y),.2,5);events.push(['m',Math.round(x),Math.round(y)]);
 }
@@ -667,10 +664,13 @@ function step(){
     // doigts : semis le long du trajet
     let tE=0;
     for(const q of ptr.values()){
-      q.c+=1/60;const fat=Math.max(.25,Math.exp(-q.c/5)),dx=q.x-q.px,dy=q.y-q.py,sp=Math.hypot(dx,dy);tE=Math.max(tE,clamp(sp*.05,0,1));recordGesture(q.x,q.y,dx,dy,sp,q.col||0);
+      const dx=q.x-q.px,dy=q.y-q.py,sp=Math.hypot(dx,dy);
+      const sr=Moteur.strokeTick(q.s||(q.s=Moteur.newStroke()),sp,1/60);   // doigt posé 2,5 s : le trait est coupé, un autre commence
+      if(sr.newStroke){q.c=0;q.d=0;if(nCols()>1)q.col=nextColor();}
+      q.c+=1/60;const fat=Moteur.fatigue(q.c);tE=Math.max(tE,clamp(sp*.05,0,1));recordGesture(q.x,q.y,dx,dy,sp,q.col||0);
       const n=Math.max(1,Math.round((2+sp*.7)*fat*(.6+L)*AF));
       q.d=(q.d||0)+sp;if(nCols()>1&&q.d>.33*Math.max(W,H)){q.d=0;q.col=nextColor();}curCol=q.col||0;
-      for(let k=0;k<n;k++){const u=rnd2();spawn(q.px+dx*u,q.py+dy*u,1,hueNow(),-1,0,420+360*L);}
+      if(sr.deposit)for(let k=0;k<n;k++){const u=rnd2();spawn(q.px+dx*u,q.py+dy*u,1,hueNow(),-1,0,420+360*L);}
       if(mic.on&&mic.loud>.1){const m2=Math.round(mic.loud*14*AF);for(let k=0;k<m2;k++){const a=rnd2()*6.2832,d=rnd2()*(6+40*mic.loud);spawn(q.x+Math.cos(a)*d,q.y+Math.sin(a)*d,1,hueNow(),-1,0,500+500*mic.loud);}}
       addFood(q.x,q.y,6,.05*fat);q.px=q.x;q.py=q.y;lastTouch={x:q.x,y:q.y,t:simT};
       if((stepN&5)===0)events.push(['p',Math.round(q.x),Math.round(q.y)]);
@@ -683,17 +683,18 @@ function step(){
     if(mic.on&&!silentWarned){if(mic.loud>.03)silentWarned=true;else if(simT-silentT0>12){silentWarned=true;setHint(`Le micro est actif mais ne capte rien pour l'instant${NB}: parler ou souffler près de l'appareil. (iPad${NB}: Réglages, Safari, Microphone.)`);}}
     if((stepN%12)===0&&mic.on)events.push(['v',Math.round(mic.loud*9),Math.round(mic.hueS*9)]);
     if(!goShown&&t>45*DUR){goShown=true;setGo('Laisser reposer',toPose);}
-    if(t>D.geste+ext)toPose();
+    if(Moteur.gesteOver(t,D,ext))toPose();
   }else if(act===ACT.PAUSE){
     if((stepN%300)===0)for(const m of marks)spawn(m.x,m.y,Math.round(60*AF),m.h,-1,0,900);
     if(t>D.pause&&!goShown){goShown=true;setHint(`Quand on veut : reprendre.`);setGo('Reprendre',askVoice);}
     dimV+=(.38-dimV)*.03;
   }else if(act===ACT.MUR){
-    if(!goShown&&(marks.length>=3||t>25*DUR)&&marks.length>0){goShown=true;setGo('Continuer',toPause);}
-    else if(!goShown&&t>D.mur&&marks.length===0){goShown=true;setHint(`Rien n'apparaît${NB}? Ce n'est pas grave : regarder encore, ou continuer.`);setGo('Continuer',toPause);}
+    const mg=Moteur.murGo(marks.length,t,DUR,goShown);
+    if(mg==='continue'){goShown=true;setGo('Continuer',toPause);}
+    else if(mg==='rien'){goShown=true;setHint(`Rien n'apparaît${NB}? Ce n'est pas grave : regarder encore, ou continuer.`);setGo('Continuer',toPause);}
   }else if(act===ACT.POSE){
     coolV=clamp(t/D.pose,0,1);dryV=coolV;
-    if(t>D.pose&&!frozen)toFin();
+    if(Moteur.poseOver(t,D)&&!frozen)toFin();
   }
   if(act!==ACT.PAUSE&&act!==ACT.MUR&&dimV<1)dimV+=(1-dimV)*.05;
   // paramètres de la matière
@@ -715,10 +716,10 @@ function skipAct(){
   else if(act===ACT.POSE&&!frozen){coolV=1;dryV=1;toFin();}
 }
 async function moreTime(){
-  if(extN>=5)return;
-  if(act===ACT.GESTE){extN++;ext+=60*DUR;}
+  if(!Moteur.canMore(act,extN))return;
+  if(act===ACT.GESTE){const r=Moteur.moreTime({extN,ext},DUR);extN=r.extN;ext=r.ext;}
   else if(act===ACT.POSE&&!frozen){
-    extN++;ext+=60*DUR;coolV=0;dryV=0;setGo();
+    {const r=Moteur.moreTime({extN,ext},DUR);extN=r.extN;ext=r.ext;}coolV=0;dryV=0;setGo();
     let ok=false;if(useMic)ok=await micStart();
     act=ACT.GESTE;actT0=simT-(D.geste+ext-60*DUR);goShown=false;
     $('#micdot').style.opacity=ok?.8:0;silentWarned=true;
@@ -729,7 +730,7 @@ skipB.addEventListener('click',skipAct);moreB.addEventListener('click',moreTime)
 function syncCtl(){
   const on=act===ACT.MUR||(act===ACT.PAUSE&&!asking)||act===ACT.GESTE||act===ACT.POSE;
   const d=on&&!frozen?'flex':'none';if(ctl.style.display!==d)ctl.style.display=d;
-  const m=(act===ACT.GESTE||act===ACT.POSE)&&extN<5?'block':'none';if(moreB.style.display!==m)moreB.style.display=m;
+  const m=Moteur.canMore(act,extN)?'block':'none';if(moreB.style.display!==m)moreB.style.display=m;
 }
 
 /* ───────── superpositions (anneaux, souffle, doigts) ───────── */
@@ -738,8 +739,8 @@ function drawOv(){
   { const st=document.getElementById('step'),L={[ACT.AMB]:'1 · Couleurs',[ACT.CADRE]:'2 · Les règles',[ACT.MUR]:'3 · Le mur',[ACT.PAUSE]:'4 · La pause',[ACT.GESTE]:'5 · Le geste',[ACT.POSE]:'5 · Le geste, ça repose'},lab=L[act];
     if(lab){if(st.dataset.l!==lab){st.dataset.l=lab;st.textContent='Étape '+lab.replace(' · ',' sur 5 · ');}st.style.opacity=1;}else st.style.opacity=0; }
   { const pg=document.getElementById('prog');let f=-1;const t=simT-actT0;
-    if(act===ACT.PAUSE)f=t/D.pause;else if(act===ACT.GESTE)f=t/(D.geste+ext);else if(act===ACT.POSE)f=t/D.pose;
-    pg.style.opacity=f>=0?1:0;if(f>=0)pg.firstChild.style.width=(clamp(f,0,1)*100)+'%'; }
+    f=Moteur.progress(act,t,D,ext);
+    pg.style.opacity=f>=0?1:0;if(f>=0)pg.firstChild.style.width=(f*100)+'%'; }
   octx.clearRect(0,0,vw,vh);
   if(act===ACT.MUR||act===ACT.PAUSE){
     for(const m of marks){const age=simT-m.t,pul=1+.12*Math.sin(simT*2.2+m.x);
