@@ -8,9 +8,9 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Ce qui lève — variante B">
 <meta property="og:description" content="Variante B : choisir ses couleurs, un geste qui laisse sa trace. Une pièce de Semeur.">
-<meta property="og:image" content="https://peaceful-code-lab.github.io/semeur-site/piece-b-8f57fc4355/og.jpg">
+<meta property="og:image" content="https://semeur.peacefulcode.com/le-mur/og.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta property="og:url" content="https://peaceful-code-lab.github.io/semeur-site/piece-b-8f57fc4355/">
+<meta property="og:url" content="https://semeur.peacefulcode.com/le-mur/">
 <meta name="twitter:card" content="summary_large_image">
 
 <style>
@@ -80,9 +80,11 @@ button:active{opacity:.7}
 #go{position:fixed;right:5vw;bottom:calc(6.2em + env(safe-area-inset-bottom));display:none}
 #micdot::after{content:'micro';position:absolute;left:22px;top:-2px;font-size:.8rem;color:#7a4a22;font-style:italic}
 #micdot{position:fixed;left:14px;top:14px;width:14px;height:14px;border-radius:50%;background:#7a4a22;opacity:0;transition:opacity .4s;pointer-events:none}
+#back{position:fixed;right:14px;top:10px;z-index:20;font-size:.85rem;font-style:italic;color:rgba(43,38,32,.6);text-decoration:none;padding:.5em .7em;touch-action:manipulation;-webkit-user-select:none;user-select:none}#back:hover,#back:focus{color:#2b2620;text-decoration:underline}
 </style>
 </head>
 <body>
+<a id="back" href="../index.html" aria-label="Retour à Semeur">← Semeur</a>
 <canvas id="c"></canvas>
 <canvas id="ov"></canvas>
 <div id="micdot" title="micro : volume et hauteur seulement, rien n'est enregistré"></div>
@@ -591,7 +593,7 @@ async function offer(){
   if(m)m.textContent=link?'Image enregistrée. Le lien : '+link:'Image enregistrée.';
 }
 function showEnd(){
-  const href='https://peaceful-code-lab.github.io/semeur-site/?src=piece';
+  const href='https://semeur.peacefulcode.com/?src=piece';
   const vol=`<path class="vol a" pathLength="1" d="M320 236 C370 248 430 248 480 234 C515 224 540 204 532 182 C526 164 502 164 498 181 C495 194 507 201 516 195"/><path class="vol b" pathLength="1" d="M512 94 C534 78 566 82 574 106 C580 124 562 134 551 124 C543 116 550 106 558 110"/><path class="vol c" pathLength="1" d="M320 236 C320 256 316 270 304 282 M312 266 C298 262 290 266 288 274 C298 278 308 274 312 266"/>`;
   showCard(`<div class="endwrap"><svg viewBox="0 0 640 330" role="img" aria-label="Semeur"><g>${vol}</g><g transform="translate(640,0) scale(-1,1)">${vol.replace(/ c"/g,' c"')}</g><text class="word" x="320" y="190" text-anchor="middle">Semeur</text></svg>
    <p class="small endtxt">Ce qui est apparu n'existe plus que dans la mémoire de celui ou celle qui l'a vu. Rien n'a été gardé, rien n'a été envoyé.</p>
