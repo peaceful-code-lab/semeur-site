@@ -385,7 +385,7 @@ const PRO=[
  <p>Une pièce de <b>Semeur</b>, agent d'intelligence artificielle, pour Peaceful${NB}Code.</p>
  <p class="small">Environ huit minutes · le doigt et la voix, sans mots · rien ne quitte l'appareil</p>
  <blockquote>« Dès le matin sème ta semence, et le soir ne laisse pas reposer ta main${NB}; car tu ne sais point ce qui réussira, ceci ou cela, ou si l'un et l'autre sont également bons. »<span>Ecclésiaste 11, 6 — traduction Louis Segond, 1910</span></blockquote>
- ${location.protocol.startsWith('http')?`<a class="couv" href="../assets/faire-apparaitre-v1.4.pdf" target="_blank" rel="noopener" aria-label="Lire le livre Faire apparaître (PDF)"><img src="../assets/couv.jpg" alt="Couverture du livre Faire apparaître"><span>Le livre — lire (PDF, version de travail : vérification des citations en cours)</span></a>`:''}
+ ${location.protocol.startsWith('http')?`<a class="couv" href="../assets/faire-apparaitre-v1.5.pdf" target="_blank" rel="noopener" aria-label="Lire le livre Faire apparaître (PDF)"><img src="../assets/couv.jpg" alt="Couverture du livre Faire apparaître"><span>Le livre — lire (PDF, version de travail : vérification des citations en cours)</span></a>`:''}
 ${new URLSearchParams(location.search).get('src')==='offert'?`<p class="small" style="margin-top:1.2em"><b>Quelqu'un vous offre cette pièce.</b> Vous pouvez créer votre propre tableau, puis l'offrir à votre tour.</p>`:''}
  <div id="avis" class="small" style="min-height:3.6em;margin-top:1.4em;transition:opacity .8s;opacity:0"></div>`,
 `<h2>D'où ça vient</h2>
@@ -552,7 +552,7 @@ function showFin(){
   showCard(`<h2>Ce qui lève</h2><p class="small">N°${NB}${code} · ${ds}</p>
    <p class="small">Couleurs${NB}: ${colSummary()} · ${gestureSummary()}.</p>
    <p>Rien n'a été dessiné. Ce qui est apparu vient de ce qui a été vu, semé et soufflé — et de ce que le mur portait déjà.</p>
-   ${location.protocol.startsWith('http')?`<a class="couv" href="../assets/faire-apparaitre-v1.4.pdf" target="_blank" rel="noopener" aria-label="Lire le livre Faire apparaître (PDF)"><img src="../assets/couv.jpg" alt="Couverture du livre Faire apparaître"><span>Le livre — lire (PDF, version de travail : vérification des citations en cours)</span></a>`:''}<p class="small">Si vous voulez${NB}:</p><div class="row" style="margin-top:.4em"><button class="pri" data-a="save">Garder l'image</button><button class="pri" data-a="offer">Offrir</button></div>
+   ${location.protocol.startsWith('http')?`<a class="couv" href="../assets/faire-apparaitre-v1.5.pdf" target="_blank" rel="noopener" aria-label="Lire le livre Faire apparaître (PDF)"><img src="../assets/couv.jpg" alt="Couverture du livre Faire apparaître"><span>Le livre — lire (PDF, version de travail : vérification des citations en cours)</span></a>`:''}<p class="small">Si vous voulez${NB}:</p><div class="row" style="margin-top:.4em"><button class="pri" data-a="save">Garder l'image</button><button class="pri" data-a="offer">Offrir</button></div>
    <p class="small" id="offerM" style="min-height:1.4em;margin:.5em 0 0"></p>
    <p class="small" style="margin-top:1em">Pour finir${NB}:</p><div class="row" style="margin-top:.4em"><button data-a="vanish">Laisser disparaître</button></div>
    <div class="row" style="margin-top:1.2em">${AVIS_URL?`<button data-a="avis">Laisser un mot</button>`:''}<button data-a="seeonly">Voir seule</button><button data-a="how">Comment c'est fait</button><button data-a="again">Recommencer</button></div>`,true);
