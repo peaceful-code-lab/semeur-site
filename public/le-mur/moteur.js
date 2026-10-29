@@ -104,7 +104,56 @@
     return bag;
   }
 
-  const Moteur = { ACT, MAX_EXT, EXT_S, MAX_MARKS, STILL_SPEED, CUT_S, GRACE_S, MAX_COLORS,
+  /* ───── export haute définition (impression, 300 dpi) ───── */
+  const PRINT = { A4: { w: 2480, h: 3508 }, A3: { w: 3508, h: 4961 } };
+  const SAFE_CANVAS_PX = 16777216;     // limite de surface d'un canevas sur iOS/Safari et beaucoup de mobiles (4096 x 4096)
+  const DESK_CANVAS_PX = 268435456;    // Chrome/Firefox de bureau
+  const MARGIN = 0.04, CAPTION = 0.03; // marge et bandeau de légende, en part du petit côté de la page
+  /* Mise en page : la page suit l'orientation du tableau (portrait ou paysage) ; le tableau, entier,
+     est centré dans la page, sans rognage, avec marge et légende. W,H = taille de la simulation. */
+  function exportLayout(fmt, W, H) {
+    const f = PRINT[fmt]; if (!f) throw new Error('format inconnu : ' + fmt);
+    const land = W > H, pw = land ? f.h : f.w, ph = land ? f.w : f.h, sh = Math.min(pw, ph);
+    const m = Math.round(sh * MARGIN), cap = Math.round(sh * CAPTION);
+    const bw = pw - 2 * m, bh = ph - 2 * m - cap;
+    const scale = Math.min(bw / W, bh / H);
+    const iw = Math.round(W * scale), ih = Math.round(H * scale);
+    return { fmt, pw, ph, land, scale, iw, ih, x: Math.round((pw - iw) / 2), y: m + Math.round((bh - ih) / 2),
+      margin: m, capY: ph - m - cap, capH: cap, capFont: Math.round(cap * 0.62), pixels: pw * ph };
+  }
+  /* Ce que l'appareil peut produire. env = { mobile, memGB (ou null), maxPx (optionnel) }.
+     Renvoie { A4: bool, A3: bool, why: { A4, A3 } } ; jamais d'exception. */
+  function exportFormats(env) {
+    env = env || {};
+    const px = k => PRINT[k].w * PRINT[k].h;
+    let max = env.maxPx || (env.mobile ? SAFE_CANVAS_PX : DESK_CANVAS_PX);
+    let memCap = Infinity, memWhy = '';
+    if (env.memGB != null) {
+      if (env.memGB < 1) { memCap = 0; memWhy = 'mémoire de l’appareil insuffisante'; }
+      else if (env.memGB < 4) { memCap = px('A4'); memWhy = 'mémoire de l’appareil limitée'; }
+    }
+    const out = { A4: true, A3: true, why: {} };
+    for (const k of ['A4', 'A3']) {
+      if (px(k) > max) { out[k] = false; out.why[k] = 'trop grand pour le canevas de cet appareil'; }
+      else if (px(k) > memCap) { out[k] = false; out.why[k] = memWhy; }
+    }
+    return out;
+  }
+  /* Choix final : le format demandé, sinon A4, sinon rien. */
+  function exportPlan(fmt, env) {
+    const av = exportFormats(env);
+    if (av[fmt]) return { ok: true, fmt, downgraded: false };
+    if (fmt === 'A3' && av.A4) return { ok: false, fmt: 'A4', downgraded: true, why: av.why.A3 };
+    return { ok: false, fmt: null, downgraded: false, why: av.why[fmt] };
+  }
+  /* poids de Catmull-Rom pour 4 échantillons, t dans [0,1) */
+  function catmull(t, w) {
+    const t2 = t * t, t3 = t2 * t;
+    w[0] = -0.5 * t3 + t2 - 0.5 * t; w[1] = 1.5 * t3 - 2.5 * t2 + 1; w[2] = -1.5 * t3 + 2 * t2 + 0.5 * t; w[3] = 0.5 * t3 - 0.5 * t2;
+    return w;
+  }
+
+  const Moteur = { PRINT, SAFE_CANVAS_PX, DESK_CANVAS_PX, exportLayout, exportFormats, exportPlan, catmull, ACT, MAX_EXT, EXT_S, MAX_MARKS, STILL_SPEED, CUT_S, GRACE_S, MAX_COLORS,
     durations, skipTarget, murGo, moreTime, canMore, gesteOver, poseOver, progress,
     newStroke, strokeTick, fatigue, paletteWeights, countColors, makeBag, clamp };
   if (typeof module !== 'undefined' && module.exports) module.exports = Moteur;
