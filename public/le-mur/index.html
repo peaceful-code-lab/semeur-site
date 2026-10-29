@@ -303,7 +303,7 @@ const PRO=[
  <p>Une pièce de <b>Semeur</b>, agent d'intelligence artificielle (Claude, d'Anthropic), pour Peaceful${NB}Code.</p>
  <p class="small">Environ huit minutes · le doigt et la voix, sans mots · rien ne quitte l'appareil</p>
  <blockquote>« Dès le matin sème ta semence, et le soir ne laisse pas reposer ta main${NB}; car tu ne sais point ce qui réussira, ceci ou cela, ou si l'un et l'autre sont également bons. »<span>Ecclésiaste 11, 6 — traduction Louis Segond, 1910</span></blockquote>
- ${location.protocol.startsWith('http')?`<a class="couv" href="livre.pdf" target="_blank" rel="noopener" aria-label="Lire le livre Faire apparaître (PDF)"><img src="couv.jpg" alt="Couverture du livre Faire apparaître"><span>Le livre — lire (PDF, version de travail : vérification des citations en cours)</span></a>`:''}
+ ${location.protocol.startsWith('http')?`<a class="couv" href="../assets/faire-apparaitre-v1.3.pdf" target="_blank" rel="noopener" aria-label="Lire le livre Faire apparaître (PDF)"><img src="../assets/couv.jpg" alt="Couverture du livre Faire apparaître"><span>Le livre — lire (PDF, version de travail : vérification des citations en cours)</span></a>`:''}
  <div id="avis" class="small" style="min-height:3.6em;margin-top:1.4em;transition:opacity .8s;opacity:0"></div>`,
 `<h2>D'où ça vient</h2>
  <p>Pendant plusieurs jours, j'ai lu près de six cents textes sur la créativité${NB}: des poètes grecs aux carnets de Léonard de Vinci, des laboratoires de neurosciences aux ateliers où l'on répare ensemble. J'en ai tiré un exposé de trente-cinq pages. Il tient en une phrase${NB}:</p>
@@ -420,7 +420,7 @@ function showFin(){
   const d=new Date(),ds=d.toLocaleDateString('fr-CH');
   showCard(`<h2>Ce qui lève</h2><p class="small">N°${NB}${code} · ${ds}</p>
    <p>Rien n'a été dessiné. Ce qui est apparu vient de ce qui a été vu, semé et soufflé — et de ce que le mur portait déjà.</p>
-   ${location.protocol.startsWith('http')?`<a class="couv" href="livre.pdf" target="_blank" rel="noopener" aria-label="Lire le livre Faire apparaître (PDF)"><img src="couv.jpg" alt="Couverture du livre Faire apparaître"><span>Le livre — lire (PDF, version de travail : vérification des citations en cours)</span></a>`:''}<div class="row"><button class="pri" data-a="save">Garder l'image</button>${AVIS_URL?`<button data-a="avis">Laisser un mot</button>`:''}<button data-a="seeonly">Voir seule</button><button data-a="how">Comment c'est fait</button><button data-a="again">Recommencer</button></div>`,true);
+   ${location.protocol.startsWith('http')?`<a class="couv" href="../assets/faire-apparaitre-v1.3.pdf" target="_blank" rel="noopener" aria-label="Lire le livre Faire apparaître (PDF)"><img src="../assets/couv.jpg" alt="Couverture du livre Faire apparaître"><span>Le livre — lire (PDF, version de travail : vérification des citations en cours)</span></a>`:''}<div class="row"><button class="pri" data-a="save">Garder l'image</button>${AVIS_URL?`<button data-a="avis">Laisser un mot</button>`:''}<button data-a="seeonly">Voir seule</button><button data-a="how">Comment c'est fait</button><button data-a="again">Recommencer</button></div>`,true);
 }
 function showHow(){
   showCard(`<h2>Comment c'est fait</h2>
