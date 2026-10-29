@@ -565,7 +565,7 @@ function showHow(){
   <li><b>Les couleurs${NB}:</b> quatre, qui ne se mélangent jamais${NB}; chaque contact en dépose une, tour à tour, et elle change le long d'un long trait.</li>
   <li><b>Le geste est un vecteur${NB}:</b> la vitesse, la direction et l'amplitude du doigt forment un champ de directions que les flux de couleur suivent.</li>
   <li><b>Le doigt</b> sème${NB}; <b>la voix</b> règle l'énergie (volume), la couleur (hauteur), la finesse (timbre) et les coulures (attaques). Aucun mot n'est reconnu.</li>
-  <li><b>Rien n'est envoyé, rien n'est enregistré.</b> Tout tourne ici, sans IA.</li>
+  <li><b>Votre image, votre voix et vos gestes ne sont ni envoyés ni enregistrés.</b> Tout tourne ici, sans IA. Seule la visite de la page est comptée, de façon anonyme.</li>
   <li>Écrit par Semeur, agent IA (Claude), pour Peaceful Code, octobre 2026. Texte de Léonard${NB}: Carnets n°${NB}508, trad. J.${NB}P. Richter (1883). Ecclésiaste${NB}: Louis Segond (1910).</li>
   <li class="small">Limites${NB}: pièce visuelle, peu accessible aux personnes malvoyantes${NB}; version d'essai.</li></ul>
   <div class="row"><button class="pri" data-a="back">Retour</button></div>`,true);
@@ -596,7 +596,7 @@ function showEnd(){
   const href='https://semeur.peacefulcode.com/?src=piece';
   const vol=`<path class="vol a" pathLength="1" d="M320 236 C370 248 430 248 480 234 C515 224 540 204 532 182 C526 164 502 164 498 181 C495 194 507 201 516 195"/><path class="vol b" pathLength="1" d="M512 94 C534 78 566 82 574 106 C580 124 562 134 551 124 C543 116 550 106 558 110"/><path class="vol c" pathLength="1" d="M320 236 C320 256 316 270 304 282 M312 266 C298 262 290 266 288 274 C298 278 308 274 312 266"/>`;
   showCard(`<div class="endwrap"><svg viewBox="0 0 640 330" role="img" aria-label="Semeur"><g>${vol}</g><g transform="translate(640,0) scale(-1,1)">${vol.replace(/ c"/g,' c"')}</g><text class="word" x="320" y="190" text-anchor="middle">Semeur</text></svg>
-   <p class="small endtxt">Ce qui est apparu n'existe plus que dans la mémoire de celui ou celle qui l'a vu. Rien n'a été gardé, rien n'a été envoyé.</p>
+   <p class="small endtxt">Ce qui est apparu n'existe plus que dans la mémoire de celui ou celle qui l'a vu. Rien de ce que vous avez fait ici n'a été gardé ni envoyé.</p>
    <div class="row endtxt" style="justify-content:center"><button data-a="again">Recommencer</button></div></div>
    <a class="raise" href="${href}" target="_blank" rel="noopener">D'autres aventures arrivent</a>`,'end');
 }
@@ -739,5 +739,6 @@ window.__lab={showEnd,K,step:n=>{for(let k=0;k<n;k++)step();},render,spawn,addFo
 window.__piece={get act(){return act;},get t(){return simT;},get fps(){return fps;},mic,get marks(){return marks.length;},W,H,MAXN,agents:()=>{let n=0;for(let i=0;i<MAXN;i++)if(al[i]>0)n++;return n;},cover:()=>{let n=0;for(let i=0;i<NPX;i++)if(aR[i]+aG[i]+aB[i]>.25)n++;return n/NPX;}};
 })();
 </script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "62a6ea4d3a3442f9ab3ec0eda27c291a"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
