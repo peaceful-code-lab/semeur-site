@@ -320,15 +320,23 @@ function ambient(on){
 }
 
 /* ───────── micro : volume, hauteur, timbre, attaques — jamais de mots, jamais d'enregistrement ───────── */
+let micStream=null,micSrc=null;
+const xbuf=new Float32Array(1024);
 const mic={err:'',on:false,ana:null,buf:null,fb:null,sr:44100,db:-90,floor:-60,peak:-40,loud:0,pitch:0,voiced:0,bright:.4,dbSlow:-70,onset:0,lastOn:-9,pLo:99,pHi:0,hue:.3,hueS:.3};
 async function micStart(){
   try{
     audioStart(); if(!AC)return false;
     const st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
-    const src=AC.createMediaStreamSource(st),an=AC.createAnalyser();an.fftSize=2048;an.smoothingTimeConstant=0;src.connect(an);
+    micStop();micStream=st;const src=AC.createMediaStreamSource(st),an=AC.createAnalyser();an.fftSize=2048;an.smoothingTimeConstant=0;src.connect(an);micSrc=src;
     if(AC.state!=='running'){try{await AC.resume();}catch(_){}}
     mic.ana=an;mic.buf=new Float32Array(2048);mic.fb=new Uint8Array(an.frequencyBinCount);mic.sr=AC.sampleRate;mic.on=true;mic.err='';return true;
   }catch(e){mic.on=false;mic.err=(e&&e.name)||'erreur';return false;}
+}
+function micStop(){
+  mic.on=false;mic.loud=0;mic.onset=0;
+  if(micSrc){try{micSrc.disconnect();}catch(_){}micSrc=null;}
+  if(micStream){for(const t of micStream.getTracks()){try{t.stop();}catch(_){}}micStream=null;}
+  mic.ana=null;
 }
 let micFrameN=0,silentT0=0,silentWarned=true;
 function micFrame(){
@@ -349,7 +357,7 @@ function micFrame(){
   if(sm>200){const cen=sw/sm;mic.bright+=(clamp((cen-300)/2600,0,1)-mic.bright)*.2;}
   // hauteur : auto-corrélation normalisée, toutes les 2 images
   if((micFrameN++&1)===0&&L>.1){
-    const n=1024,x=new Float32Array(n);for(let i=0;i<n;i++)x[i]=.5*(b[2*i]+b[2*i+1]);
+    const n=1024,x=xbuf;for(let i=0;i<n;i++)x[i]=.5*(b[2*i]+b[2*i+1]);
     const sr2=mic.sr/2,lmin=Math.floor(sr2/800),lmax=Math.min(n-2,Math.ceil(sr2/70));
     let e0=0;for(let i=0;i<n;i++)e0+=x[i]*x[i];
     let best=0,bl=0;
@@ -508,10 +516,10 @@ function toPose(){
   { let c=0;const N=Math.round(900*AF);
     for(let n=0;n<6000&&c<N;n++){const k=(rnd2()*FW*FH)|0,m=Math.hypot(fvx[k],fvy[k]);
       if(m>.15){spawn((k%FW)*FC+FC/2,((k/FW)|0)*FC+FC/2,1,fcol[k]*16+clamp(Math.round(5+rnd2()*8),0,15),Math.atan2(fvy[k],fvx[k]),.5,800);c++;}}}
-  act=ACT.POSE;actT0=simT;setGo();setHint(`Ça repose.`);$('#micdot').style.opacity=0;ptr.clear();
+  act=ACT.POSE;actT0=simT;setGo();setHint(`Ça repose.`);$('#micdot').style.opacity=0;ptr.clear();micStop();
 }
 function toFin(){
-  act=ACT.FIN;frozen=true;setHint();
+  act=ACT.FIN;frozen=true;setHint();micStop();setTimeout(()=>{if(AC&&AC.state==='running')AC.suspend().catch(()=>{});},16000);
   const ev=JSON.stringify(events);let h=2166136261;for(let i=0;i<ev.length;i++){h^=ev.charCodeAt(i);h=Math.imul(h,16777619);}
   code=((h>>>0).toString(36)+WSEED.toString(36)).toUpperCase().slice(0,10);
   render();
@@ -720,14 +728,14 @@ function drawOv(){
 }
 
 /* ───────── boucle ───────── */
-let last=performance.now(),acc=0,fps=60;
+let last=performance.now(),acc=0,fps=60,ovDone=false;
 function frame(now){
   const dt=Math.min(.1,(now-last)/1000);last=now;fps+=(1/Math.max(dt,.001)-fps)*.05;
   acc+=dt*60*SPEED;let steps=Math.min(12,acc|0);acc-=steps;
   micFrame();
   if(!frozen)for(let k=0;k<steps;k++)step();
-  if(!frozen||act===ACT.FIN&&stepN%2===0)render();
-  drawOv();
+  if(!frozen){render();ovDone=false;}
+  if(!(frozen&&ovDone)){drawOv();if(frozen)ovDone=true;}
   requestAnimationFrame(frame);
 }
 makeWall();
