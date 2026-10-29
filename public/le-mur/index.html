@@ -80,9 +80,11 @@ button:active{opacity:.7}
 #go{position:fixed;right:5vw;bottom:calc(6.2em + env(safe-area-inset-bottom));display:none}
 #micdot::after{content:'micro';position:absolute;left:22px;top:-2px;font-size:.8rem;color:#7a4a22;font-style:italic}
 #micdot{position:fixed;left:14px;top:14px;width:14px;height:14px;border-radius:50%;background:#7a4a22;opacity:0;transition:opacity .4s;pointer-events:none}
+#back{position:fixed;right:14px;top:10px;z-index:20;font-size:.85rem;font-style:italic;color:rgba(43,38,32,.6);text-decoration:none;padding:.5em .7em;touch-action:manipulation;-webkit-user-select:none;user-select:none}#back:hover,#back:focus{color:#2b2620;text-decoration:underline}
 </style>
 </head>
 <body>
+<a id="back" href="../index.html" aria-label="Retour à Semeur">← Semeur</a>
 <canvas id="c"></canvas>
 <canvas id="ov"></canvas>
 <div id="micdot" title="micro : volume et hauteur seulement, rien n'est enregistré"></div>
