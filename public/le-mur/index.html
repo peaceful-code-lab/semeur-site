@@ -4,13 +4,13 @@
 <meta name="robots" content="noindex,nofollow">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Ce qui lève</title>
+<title>Ce qui lève — variante B</title>
 <meta property="og:type" content="website">
-<meta property="og:title" content="Ce qui lève">
-<meta property="og:description" content="Une pièce de Semeur : le doigt, la voix, sans mots. Un tableau apparaît.">
-<meta property="og:image" content="https://peaceful-code-lab.github.io/semeur-site/piece-1d23655df64e/og.jpg">
+<meta property="og:title" content="Ce qui lève — variante B">
+<meta property="og:description" content="Variante B : choisir ses couleurs, un geste qui laisse sa trace. Une pièce de Semeur.">
+<meta property="og:image" content="https://peaceful-code-lab.github.io/semeur-site/piece-b-8f57fc4355/og.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta property="og:url" content="https://peaceful-code-lab.github.io/semeur-site/piece-1d23655df64e/">
+<meta property="og:url" content="https://peaceful-code-lab.github.io/semeur-site/piece-b-8f57fc4355/">
 <meta name="twitter:card" content="summary_large_image">
 
 <style>
@@ -39,13 +39,47 @@ a.couv{display:inline-block;text-decoration:none;margin:1.2em 0 0;perspective:60
 a.couv img{display:block;width:112px;height:auto;border-radius:1px 4px 4px 1px;transform:rotateY(-14deg);transform-origin:left center;transition:transform .35s;box-shadow:-2px 1px 0 #cfc4b2,-4px 2px 0 #c2b6a3,8px 10px 18px rgba(43,38,32,.35),inset 3px 0 4px rgba(255,255,255,.4)}
 a.couv:hover img,a.couv:active img{transform:rotateY(-4deg) translateY(-2px)}
 a.couv span{display:block;font-size:.8rem;color:var(--soft);margin-top:.7em}
+#card.peek{background:transparent;align-items:flex-end;padding:0;pointer-events:none}
+#card.peek .box{pointer-events:auto;background:rgba(217,207,191,.95);max-width:none;margin:0;padding:1.1em 6vw calc(1.1em + env(safe-area-inset-bottom));box-sizing:border-box;border-top:1px solid rgba(43,38,32,.25)}
+.amb{display:flex;justify-content:space-between;gap:1em;margin:.6em 0 .2em;font-size:1.05rem}
+.amb b{display:block;font-size:1.5rem;font-weight:normal;font-style:italic}
+.amb span{font-size:.85rem;color:var(--soft)}
+#sqWrap{display:flex;gap:2.2em;align-items:center;margin:2.2em 0 1.8em;flex-wrap:wrap}
+#sq{position:relative;width:min(44vw,220px);height:min(44vw,220px);border:1px solid rgba(43,38,32,.4);border-radius:3px;touch-action:none;cursor:pointer;background:transparent;box-shadow:inset 0 2px 5px rgba(43,38,32,.16),0 1px 0 rgba(255,255,255,.4)}
+#sq svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#sq .pt{position:absolute;width:9px;height:9px;border-radius:50%;transform:translate(-50%,-50%);border:1.5px solid rgba(43,38,32,.55);background:rgba(217,207,191,.7);pointer-events:none}
+@media(max-width:560px){#sqWrap{justify-content:center;gap:1.1em;margin:2em 0 1.8em}#sq{width:min(56vw,210px);height:min(56vw,210px)}#sqSide{text-align:center;margin-top:2.4em}}
+#step{position:fixed;top:9px;left:0;right:0;text-align:center;font-size:.8rem;font-style:italic;color:rgba(43,38,32,.5);pointer-events:none;z-index:7;transition:opacity .5s;opacity:0}
+#card.end .box{max-width:none;text-align:center}
+.endwrap svg{width:min(92vw,560px);height:auto;display:block;margin:0 auto}
+.word{font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:120px;letter-spacing:4px;fill:transparent;stroke:#b8862a;stroke-width:1.3;stroke-dasharray:900;stroke-dashoffset:900;animation:wr 3.2s ease-in-out .5s forwards,fl 1.8s ease 3.1s forwards}
+@keyframes wr{to{stroke-dashoffset:0}}
+@keyframes fl{to{fill:#c9982f}}
+.vol{fill:none;stroke:#b8862a;stroke-width:2;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1}
+@keyframes dr{to{stroke-dashoffset:0}}
+.vol.a{animation:dr 2.4s ease-in-out 4.2s forwards}.vol.b{animation:dr 2s ease-in-out 5.4s forwards}.vol.c{animation:dr 1.6s ease-in-out 6.4s forwards}
+@keyframes fi{to{opacity:1}}
+.endtxt{opacity:0;animation:fi 1.6s ease 7.2s forwards;margin-top:.4em}
+.raise{opacity:0;animation:fi 1.6s ease 8s forwards;position:fixed;right:5vw;bottom:calc(5vh + env(safe-area-inset-bottom));display:inline-block;padding:.8em 1.3em;background:linear-gradient(#e8decb,#d3c7ae);color:#2b2620;border:1px solid #8a7a5a;border-radius:6px;box-shadow:0 2px 0 #8a7a5a,0 7px 16px rgba(43,38,32,.28),inset 0 1px 0 rgba(255,255,255,.55);text-decoration:none;font-size:1.05rem}
+.raise:active{transform:translateY(2px);box-shadow:0 0 0 #8a7a5a,0 3px 8px rgba(43,38,32,.28)}
+@media(prefers-reduced-motion:reduce){.word{animation:none;fill:#c9982f;stroke-dashoffset:0}.vol{animation:none;stroke-dashoffset:0}.endtxt,.raise{animation:none;opacity:1}}
+#prog{position:fixed;left:0;right:0;bottom:0;height:3px;pointer-events:none;z-index:6;opacity:0;transition:opacity .6s}
+#prog i{display:block;height:100%;width:0;background:rgba(43,38,32,.5)}
+.dots span{cursor:pointer;padding:.5em .15em}
+.prev{margin-top:.8em;font-size:.95rem;min-height:40px;border-color:transparent;color:var(--soft)}
+#sq .cn{position:absolute;width:34px;height:34px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 1px 3px rgba(0,0,0,.35)}
+#sq .nm{position:absolute;font-size:.85rem;font-style:italic;color:var(--soft);pointer-events:none}
+#sqDot{position:absolute;width:22px;height:22px;border:2px solid #2b2620;border-radius:50%;transform:translate(-50%,-50%);background:rgba(217,207,191,.55);pointer-events:none}
+@keyframes poke{50%{transform:scale(1.07);box-shadow:0 0 0 6px rgba(43,38,32,.15)}}
+.poke{animation:poke 1.6s ease-in-out infinite}
 button.pri{background:var(--ink);color:var(--pl)}
 button:active{opacity:.7}
 .dots{margin-top:1.6em;font-size:.8rem;color:var(--soft);letter-spacing:.35em}
 #hint{position:fixed;left:0;right:0;bottom:0;padding:2.2em 6vw calc(1.1em + env(safe-area-inset-bottom));text-align:center;font-size:clamp(1rem,3.3vw,1.2rem);line-height:1.4;color:#2b2620;background:linear-gradient(rgba(217,207,191,0),rgba(217,207,191,.88) 60%);pointer-events:none;opacity:0;transition:opacity .6s}
 #hint.on{opacity:1}
 #go{position:fixed;right:5vw;bottom:calc(6.2em + env(safe-area-inset-bottom));display:none}
-#micdot{position:fixed;left:14px;top:14px;width:12px;height:12px;border-radius:50%;background:#7a4a22;opacity:0;transition:opacity .4s;pointer-events:none}
+#micdot::after{content:'micro';position:absolute;left:22px;top:-2px;font-size:.8rem;color:#7a4a22;font-style:italic}
+#micdot{position:fixed;left:14px;top:14px;width:14px;height:14px;border-radius:50%;background:#7a4a22;opacity:0;transition:opacity .4s;pointer-events:none}
 </style>
 </head>
 <body>
@@ -53,6 +87,8 @@ button:active{opacity:.7}
 <canvas id="ov"></canvas>
 <div id="micdot" title="micro : volume et hauteur seulement, rien n'est enregistré"></div>
 <div id="hint"></div>
+<div id="prog"><i></i></div>
+<div id="step"></div>
 <button id="go" class="pri"></button>
 <div id="card"><div class="box" id="box"></div></div>
 <script>
@@ -145,11 +181,28 @@ function makeWall(){
 }
 
 /* ───────── pigments (réflectance sur plâtre -> absorption) ───────── */
-const PAL=[[0,[.33,.23,.15]],[.25,[.55,.24,.14]],[.45,[.78,.55,.16]],[.7,[.24,.52,.46]],[1,[.18,.30,.60]]];
+const COLS=[['Braise',[.70,.16,.10]],['Prune',[.46,.18,.50]],['Mousse',[.22,.46,.26]],['Encre',[.14,.24,.58]]];  // pas de mélange : une couleur par graine
 const palR=new Float32Array(64),palG=new Float32Array(64),palB=new Float32Array(64);
-for(let i=0;i<64;i++){const t=i/63;let k=0;while(k<PAL.length-2&&t>PAL[k+1][0])k++;
-  const [t0,c0]=PAL[k],[t1,c1]=PAL[k+1],u=(t-t0)/(t1-t0),c=c0.map((v,j)=>v+(c1[j]-v)*u);
-  palR[i]=-Math.log(c[0]);palG[i]=-Math.log(c[1]);palB[i]=-Math.log(c[2]);}
+for(let c=0;c<4;c++)for(let k=0;k<16;k++){const t=k/15,b0=COLS[c][1];
+  const f=t<.5?(.62+.76*t):1, lg=t>.5?(t-.5)*.7:0;
+  const rr=b0.map(v=>{const x=v*f+(.92-v*f)*lg;return Math.max(.03,Math.min(.97,x));});
+  palR[c*16+k]=-Math.log(rr[0]);palG[c*16+k]=-Math.log(rr[1]);palB[c*16+k]=-Math.log(rr[2]);}
+/* choix des couleurs : un carré à quatre coins ; le coin donne une couleur, le bord deux, le centre les quatre */
+const sel={u:.5,v:.5,w:[.25,.25,.25,.25],bag:[]};
+function setSel(u,v){
+  const sn=(x)=>x<.1?0:x>.9?1:Math.abs(x-.5)<.1?.5:x;u=sn(u);v=sn(v);sel.u=u;sel.v=v;
+  let w=[(1-u)*(1-v),u*(1-v),(1-u)*v,u*v];w=w.map(x=>x<.12?0:x);const t=w.reduce((a,b)=>a+b,0)||1;sel.w=w.map(x=>x/t);sel.bag=[];
+}
+function nextColor(){
+  if(!sel.bag.length){
+    const pres=sel.w.map((x,i)=>[x,i]).filter(e=>e[0]>0),wm=Math.min(...pres.map(e=>e[0]));
+    for(const [x,i] of pres){const n=Math.max(1,Math.round(x/wm));for(let k=0;k<n&&sel.bag.length<14;k++)sel.bag.push(i);}
+    for(let i=sel.bag.length-1;i>0;i--){const j=(rnd2()*(i+1))|0;[sel.bag[i],sel.bag[j]]=[sel.bag[j],sel.bag[i]];}
+  }
+  return sel.bag.pop();
+}
+const nCols=()=>sel.w.filter(x=>x>0).length;
+setSel(.5,.5);
 
 /* ───────── agents (graines) : un modèle de type Physarum ───────── */
 const MAXN=Math.max(6000,Math.min(22000,Math.round(NPX*.075))), AF=clamp(NPX/230000,.4,1.2);
@@ -164,6 +217,28 @@ function addFood(x,y,r,amp){
   const x0=Math.max(0,(x-r*2)|0),x1=Math.min(W-1,(x+r*2)|0),y0=Math.max(0,(y-r*2)|0),y1=Math.min(H-1,(y+r*2)|0),q=1/(r*r*.8);
   for(let yy=y0;yy<=y1;yy++)for(let xx=x0;xx<=x1;xx++){const d=(xx-x)*(xx-x)+(yy-y)*(yy-y);food[yy*W+xx]+=amp*Math.exp(-d*q);}
 }
+/* ───────── le geste comme vecteur : un champ de directions (simple et complexe à la fois) ───────── */
+const FC=8,FW=Math.ceil(W/FC),FH=Math.ceil(H/FC),fvx=new Float32Array(FW*FH),fvy=new Float32Array(FW*FH);
+const G={moved:0,run:0,pauses:0,spd:0,vx:0,vy:0,path:0,x0:1e9,x1:-1e9,y0:1e9,y1:-1e9};
+let flowK=0;
+const fcol=new Uint8Array(FW*FH);
+function recordGesture(x,y,dx,dy,sp,col){
+  if(sp<.35){if(++G.run===24)G.pauses++;return;}
+  G.run=0;G.moved++;G.spd+=sp;G.vx+=dx;G.vy+=dy;G.path+=sp;
+  G.x0=Math.min(G.x0,x);G.x1=Math.max(G.x1,x);G.y0=Math.min(G.y0,y);G.y1=Math.max(G.y1,y);
+  const ux=dx/sp,uy=dy/sp,mag=Math.min(1,sp*.3),cx=(x/FC)|0,cy=(y/FC)|0;
+  for(let j=-3;j<=3;j++)for(let i=-3;i<=3;i++){const X=cx+i,Y=cy+j;if(X<0||Y<0||X>=FW||Y>=FH)continue;
+    const w=Math.exp(-(i*i+j*j)/4)*.25,k=Y*FW+X;fvx[k]+=(ux*mag-fvx[k])*w;fvy[k]+=(uy*mag-fvy[k])*w;if(w>.12)fcol[k]=col;}
+}
+function gestureSummary(){
+  if(G.moved<30)return 'geste très discret';
+  const spn=G.spd/G.moved*60/Math.max(W,H), cov=Math.hypot(G.x1-G.x0,G.y1-G.y0)/Math.hypot(W,H), coh=Math.hypot(G.vx,G.vy)/Math.max(1,G.path), pa=G.pauses;
+  const v=spn<.3?'lent':spn<.8?'mesuré':'vif', am=cov<.3?'resserré':cov<.6?'de taille moyenne':'ample';
+  let dr;
+  if(coh>.3){const ang=Math.atan2(G.vy,G.vx)*180/Math.PI,names=['vers la droite','vers le bas-droite','vers le bas','vers le bas-gauche','vers la gauche','vers le haut-gauche','vers le haut','vers le haut-droite'];dr='qui va surtout '+names[((Math.round(ang/45)%8)+8)%8];}
+  else dr='qui tourne, sans direction dominante';
+  return `votre geste : ${v}, ${am}, ${dr}${pa>=2?', avec des pauses':', sans pause'}`;
+}
 const P={SP:.9,SA:.45,SD:7,TA:.4,DEP:.03,JIT:.1,GR:.02,DEC:.985};
 const K={FG:.7,RG:.3,CD:3,SAT:3.0,DECB:.945,FOOD:.25};
 function moveAgents(cool){
@@ -177,6 +252,8 @@ function moveAgents(cool){
     const fc=S(y+sa_*sd,x+ca*sd), fl=S(y+(sa_*cs-ca*sn)*sd,x+(ca*cs+sa_*sn)*sd), fr=S(y+(sa_*cs+ca*sn)*sd,x+(ca*cs-sa_*sn)*sd);
     if(fc>fl&&fc>fr){}else if(fc<fl&&fc<fr){a+=rnd2()<.5?-ta:ta;}else if(fl<fr){a+=ta;}else if(fr<fl){a-=ta;}
     a+=gr*Math.sin(1.5707963-a)+(rnd2()-.5)*jit;
+    if(flowK>0){const fk=((y*.125)|0)*FW+((x*.125)|0),fx=fvx[fk],fy=fvy[fk],m2=fx*fx+fy*fy;
+      if(m2>.01){let d=Math.atan2(fy,fx)-a;d=((d+3.14159265)%6.2831853+6.2831853)%6.2831853-3.14159265;a+=d*flowK*Math.sqrt(m2);}}
     x+=Math.cos(a)*sp; y+=Math.sin(a)*sp;
     if(x<1||x>=wm||y<1||y>=hm){a=rnd2()*6.2832;x=clamp(x,1,wm-1);y=clamp(y,1,hm-1);}
     ax[i]=x;ay[i]=y;aa[i]=a;al[i]=life-1;
@@ -197,12 +274,12 @@ function diffuse(){
 }
 
 /* ───────── rendu ───────── */
-let dimV=1, dryV=0;
+let dimV=1, dryV=0, pigK=1, wallK=1;
 function render(){
-  const d=img.data, dim=dimV, g=1+.25*dryV;
+  const d=img.data, dim=dimV, g=(1+.25*dryV)*pigK, wk=wallK, wi=1-wk;
   for(let i=0,j=0;i<NPX;i++,j+=4){
     let ir=(aR[i]*g*64)|0,ig=(aG[i]*g*64)|0,ib=(aB[i]*g*64)|0;
-    d[j]=wr[i]*EXPT[ir>1023?1023:ir]*dim; d[j+1]=wg[i]*EXPT[ig>1023?1023:ig]*dim; d[j+2]=wb[i]*EXPT[ib>1023?1023:ib]*dim;}
+    d[j]=(wr[i]*wk+217*wi)*EXPT[ir>1023?1023:ir]*dim; d[j+1]=(wg[i]*wk+207*wi)*EXPT[ig>1023?1023:ig]*dim; d[j+2]=(wb[i]*wk+191*wi)*EXPT[ib>1023?1023:ib]*dim;}
   ctx.putImageData(img,0,0);
 }
 
@@ -241,16 +318,17 @@ function ambient(on){
 }
 
 /* ───────── micro : volume, hauteur, timbre, attaques — jamais de mots, jamais d'enregistrement ───────── */
-const mic={on:false,ana:null,buf:null,fb:null,sr:44100,db:-90,floor:-60,peak:-40,loud:0,pitch:0,voiced:0,bright:.4,dbSlow:-70,onset:0,lastOn:-9,pLo:99,pHi:0,hue:.3,hueS:.3};
+const mic={err:'',on:false,ana:null,buf:null,fb:null,sr:44100,db:-90,floor:-60,peak:-40,loud:0,pitch:0,voiced:0,bright:.4,dbSlow:-70,onset:0,lastOn:-9,pLo:99,pHi:0,hue:.3,hueS:.3};
 async function micStart(){
   try{
     audioStart(); if(!AC)return false;
     const st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
     const src=AC.createMediaStreamSource(st),an=AC.createAnalyser();an.fftSize=2048;an.smoothingTimeConstant=0;src.connect(an);
-    mic.ana=an;mic.buf=new Float32Array(2048);mic.fb=new Uint8Array(an.frequencyBinCount);mic.sr=AC.sampleRate;mic.on=true;return true;
-  }catch(e){mic.on=false;return false;}
+    if(AC.state!=='running'){try{await AC.resume();}catch(_){}}
+    mic.ana=an;mic.buf=new Float32Array(2048);mic.fb=new Uint8Array(an.frequencyBinCount);mic.sr=AC.sampleRate;mic.on=true;mic.err='';return true;
+  }catch(e){mic.on=false;mic.err=(e&&e.name)||'erreur';return false;}
 }
-let micFrameN=0;
+let micFrameN=0,silentT0=0,silentWarned=true;
 function micFrame(){
   if(!mic.on)return;
   const an=mic.ana,b=mic.buf;an.getFloatTimeDomainData(b);
@@ -285,25 +363,28 @@ function micFrame(){
 }
 
 /* ───────── états et durées ───────── */
-const ACT={PRO:0,CADRE:1,MUR:2,PAUSE:3,GESTE:4,POSE:5,FIN:6};
-let act=ACT.PRO,actT0=0,simT=0,coolV=0,useMic=true,frozen=false,code='';
+const ACT={PRO:0,CADRE:1,MUR:2,PAUSE:3,GESTE:4,POSE:5,FIN:6,AMB:7};
+let act=ACT.PRO,actT0=0,simT=0,coolV=0,useMic=false,frozen=false,code='';
 const D={mur:75*DUR,pause:45*DUR,geste:150*DUR,pose:36*DUR};
 const marks=[],ptr=new Map(),events=[];
-let touchE=0,lastTouch=null,curHue=20,goShown=false;
+let touchE=0,lastTouch=null,curShade=8,curCol=0,goShown=false;
+const hueNow=()=>curCol*16+clamp(Math.round(curShade),0,15);
 
 /* ───────── interface : cartes ───────── */
 const card=$('#card'),box=$('#box'),hint=$('#hint'),go=$('#go');
-function showCard(html,clear){box.innerHTML=html;card.className='on'+(clear?' clear':'');requestAnimationFrame(()=>requestAnimationFrame(()=>card.classList.add('vis')));}
+function showCard(html,clear){box.innerHTML=html;card.className='on'+(clear===true?' clear':clear?' '+clear:'');requestAnimationFrame(()=>requestAnimationFrame(()=>card.classList.add('vis')));}
 function hideCard(){card.classList.remove('vis');setTimeout(()=>{if(!card.classList.contains('vis'))card.classList.remove('on');},550);}
 function setHint(t){if(!t){hint.classList.remove('on');return;}hint.innerHTML=t;hint.classList.add('on');}
-function setGo(t,fn){if(!t){go.style.display='none';go.onclick=null;return;}go.textContent=t;go.style.display='block';go.onclick=fn;}
+let pokeT=0;
+function setGo(t,fn){clearTimeout(pokeT);go.classList.remove('poke');if(!t){go.style.display='none';go.onclick=null;return;}go.textContent=t;go.style.display='block';go.onclick=fn;pokeT=setTimeout(()=>go.classList.add('poke'),120000);}
 const NB='&nbsp;';
 const PRO=[
 `<h1>Ce qui lève</h1>
- <p>Une pièce de <b>Semeur</b>, agent d'intelligence artificielle (Claude, d'Anthropic), pour Peaceful${NB}Code.</p>
+ <p>Une pièce de <b>Semeur</b>, agent d'intelligence artificielle, pour Peaceful${NB}Code.</p>
  <p class="small">Environ huit minutes · le doigt et la voix, sans mots · rien ne quitte l'appareil</p>
  <blockquote>« Dès le matin sème ta semence, et le soir ne laisse pas reposer ta main${NB}; car tu ne sais point ce qui réussira, ceci ou cela, ou si l'un et l'autre sont également bons. »<span>Ecclésiaste 11, 6 — traduction Louis Segond, 1910</span></blockquote>
  ${location.protocol.startsWith('http')?`<a class="couv" href="../assets/faire-apparaitre-v1.3.pdf" target="_blank" rel="noopener" aria-label="Lire le livre Faire apparaître (PDF)"><img src="../assets/couv.jpg" alt="Couverture du livre Faire apparaître"><span>Le livre — lire (PDF, version de travail : vérification des citations en cours)</span></a>`:''}
+${new URLSearchParams(location.search).get('src')==='offert'?`<p class="small" style="margin-top:1.2em"><b>Quelqu'un vous offre cette pièce.</b> Vous pouvez créer votre propre tableau, puis l'offrir à votre tour.</p>`:''}
  <div id="avis" class="small" style="min-height:3.6em;margin-top:1.4em;transition:opacity .8s;opacity:0"></div>`,
 `<h2>D'où ça vient</h2>
  <p>Pendant plusieurs jours, j'ai lu près de six cents textes sur la créativité${NB}: des poètes grecs aux carnets de Léonard de Vinci, des laboratoires de neurosciences aux ateliers où l'on répare ensemble. J'en ai tiré un exposé de trente-cinq pages. Il tient en une phrase${NB}:</p>
@@ -313,30 +394,38 @@ const PRO=[
  <p>Ce que ces lectures m'ont appris tient en trois idées. Cette pièce les met en scène${NB}:</p>
  <ul><li><b>On ne crée pas dans le vide.</b> Il faut un cadre, une règle, une contrainte.</li>
  <li><b>On ne crée pas en forçant.</b> Il faut une pause, du sommeil, parfois de l'ennui.</li>
- <li><b>On ne crée pas seul.</b> Il faut que quelqu'un voie ce qui est apparu.</li></ul>`,
+ <li><b>On ne crée pas seul.</b> Il faut que quelqu'un voie ce qui est apparu. Ici, vous créez avec un programme que j'ai écrit${NB}: ma part est la règle, la vôtre est le geste.</li></ul>`,
 `<h2>Un mur taché</h2>
  <p>Dans ses carnets, Léonard de Vinci recommande un procédé qu'il juge lui-même «${NB}presque risible${NB}», mais «${NB}extrêmement utile${NB}» pour éveiller l'esprit à des inventions : regarder un mur taché. Quand on doit inventer une scène, on y trouve des paysages, des batailles, des visages étranges — «${NB}comme dans le son des cloches, où l'on peut trouver le nom ou le mot que l'on veut${NB}».</p>
  <p>Puis il faut <i>ramener</i> ce qu'on a vu à des formes complètes. Voir n'est que la moitié du travail.</p>
  <p class="small">Carnets, n° 508, trad. J. P. Richter, 1883 — traduction libre de la version anglaise.</p>`,
 `<h2>Ce qui va se passer</h2>
- <ol><li><b>Un cadre</b> — trois règles.</li><li><b>Un mur</b> — on y cherche ce qu'on voit.</li><li><b>Une pause.</b></li><li><b>Un geste</b> — le doigt, la voix (sans mots).</li><li><b>L'apparition.</b></li></ol>
+ <ol><li><b>Des couleurs</b> — un carré pour choisir, une couleur ou les quatre.</li><li><b>Un cadre</b> — trois règles.</li><li><b>Un mur</b> — on y cherche ce qu'on voit.</li><li><b>Une pause.</b></li><li><b>Un geste</b> — le doigt, la voix (sans mots) : sa trace guidera les flux de couleur.</li><li><b>L'apparition.</b></li></ol>
  <p>Rien à dessiner${NB}: on ne trace pas des formes, on sème, et la matière répond à sa façon. Rien à écrire, personne ne juge.</p>`,
 `<h2>Ce qui n'est pas pris</h2>
- <p>Aucune intelligence artificielle ne tourne ici${NB}: seulement un programme, écrit par Semeur, qui travaille sur cet appareil. Le micro n'écoute que le volume et la hauteur de la voix${NB}: ni mots, ni enregistrement, rien n'est envoyé. On peut s'en passer${NB}: tout marche au doigt. Aucun compte, aucun suivi.</p>
- <p class="small">Version d'essai.</p>`
+ <p>Aucune intelligence artificielle ne tourne ici${NB}: seulement un programme, écrit par Semeur, qui travaille sur cet appareil. Le micro n'écoute que le volume et la hauteur de la voix${NB}: ni mots, ni enregistrement, rien n'est envoyé. Il ne sera demandé qu'au moment du geste, et l'on peut s'en passer${NB}: tout marche au doigt. Aucun compte, aucun suivi.</p>
+ <p class="small">Variante B (essai) : des couleurs au choix, un geste qui laisse sa trace, trois façons de finir.</p>`
 ];
 let proI=0;
+(()=>{let x0=null;card.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;},{passive:true});card.addEventListener('touchend',e=>{if(x0===null||act!==ACT.PRO)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>70){proI=clamp(proI+(dx<0?1:-1),0,PRO.length-1);renderPro();}},{passive:true});})();
 function renderPro(){
   const last=proI===PRO.length-1;
-  const btns=last?`<div class="row"><button class="pri" data-a="start-mic">Commencer, avec la voix</button><button data-a="start-nomic">Commencer, au doigt seul</button></div>`
+  const btns=last?`<div class="row"><button class="pri" data-a="start">Commencer</button></div>`
                  :`<div class="row"><button class="pri" data-a="next">Continuer</button></div>`;
   setTimeout(startAvis,50);
-  showCard(PRO[proI]+btns+`<div class="dots">${PRO.map((_,i)=>i===proI?'●':'○').join(' ')}</div>`);
+  showCard(PRO[proI]+btns+(proI>0?`<div><button class="prev" data-a="prev">‹ Précédent</button></div>`:'')+`<div class="dots">${PRO.map((_,i)=>`<span data-a="goto" data-i="${i}" aria-label="étape ${i+1}">${i===proI?'●':'○'}</span>`).join(' ')}</div>`);
 }
 card.addEventListener('click',e=>{
   const a=e.target&&e.target.getAttribute&&e.target.getAttribute('data-a'); if(!a)return;
-  if(a==='next'){proI++;renderPro();}
-  else if(a==='start-mic'||a==='start-nomic'){useMic=a==='start-mic';audioStart();toCadre();}
+  if(a==='next'){proI=Math.min(proI+1,PRO.length-1);renderPro();}
+  else if(a==='prev'){proI=Math.max(proI-1,0);renderPro();}
+  else if(a==='goto'){proI=+e.target.getAttribute('data-i')||0;renderPro();}
+  else if(a==='start'){audioStart();toAmbiance();}
+  else if(a==='voice-yes'||a==='voice-no'){useMic=a==='voice-yes';hideCard();toGeste();}
+  else if(a==='amb-ok'){ambOk();}
+  else if(a==='amb'){toAmbiance();}
+  else if(a==='offer'){offer();}
+  else if(a==='vanish'){vanish();}
   else if(a==='enter'){hideCard();toMur();}
   else if(a==='save'){savePNG();}
   else if(a==='how'){showHow();}
@@ -348,9 +437,38 @@ card.addEventListener('click',e=>{
 });
 
 /* ───────── les actes ───────── */
+function seedPreview(){
+  al.fill(0);aR.fill(0);aG.fill(0);aB.fill(0);chem.fill(0);food.fill(0);sel.bag=[];
+  for(let c=0;c<8;c++){const x=W*(.1+.8*rnd2()),y=H*(.08+.5*rnd2());spawn(x,y,240,nextColor()*16+4+((rnd2()*8)|0),-1,0,1800);addFood(x,y,8,.3);}
+}
+function colSummary(){const n=sel.w.map((x,i)=>x>0?COLS[i][0]:null).filter(Boolean);return n.length===4?'les quatre couleurs':n.join(' et ');}
+function drawSquare(){
+  const sq=document.getElementById('sq');if(!sq)return;
+  const dot=document.getElementById('sqDot');dot.style.left=(sel.u*100)+'%';dot.style.top=(sel.v*100)+'%';
+  document.getElementById('sqTxt').textContent=colSummary();
+}
+let ambTimer=0;
+function toAmbiance(){
+  act=ACT.AMB;setHint();setGo();
+  const cs=COLS.map((c,i)=>{const t=palR.length?0:0;return `rgb(${[0,1,2].map(j=>Math.round(255*Math.exp(-[palR,palG,palB][j][i*16+8]))).join(',')})`;});
+  showCard(`<h2>Des couleurs</h2>
+   <p class="small">Toucher le carré pour choisir. Un coin, une seule couleur${NB}; un bord, deux${NB}; le centre, les quatre. Elles ne se mélangent pas${NB}: chaque contact en dépose une, tour à tour.</p>
+   <div id="sqWrap"><div id="sq"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 0H100V100H0Z M0 0L100 100M100 0L0 100" fill="none" stroke="rgba(43,38,32,.3)" stroke-width="1" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/></svg><i class="pt" style="left:50%;top:0"></i><i class="pt" style="left:0;top:50%"></i><i class="pt" style="left:100%;top:50%"></i><i class="pt" style="left:50%;top:100%"></i><i class="pt" style="left:50%;top:50%"></i><i class="cn" style="left:0;top:0;background:${cs[0]}"></i><i class="cn" style="left:100%;top:0;background:${cs[1]}"></i><i class="cn" style="left:0;top:100%;background:${cs[2]}"></i><i class="cn" style="left:100%;top:100%;background:${cs[3]}"></i><b id="sqDot"></b>
+   <span class="nm" style="left:22px;top:-2.2em">${COLS[0][0]}</span><span class="nm" style="right:22px;top:-2.2em">${COLS[1][0]}</span><span class="nm" style="left:22px;bottom:-2.4em">${COLS[2][0]}</span><span class="nm" style="right:22px;bottom:-2.4em">${COLS[3][0]}</span></div>
+   <div id="sqSide"><p id="sqTxt" style="font-style:italic;font-size:1.2rem;margin:0 0 .8em"></p><button class="pri" id="ambBtn" data-a="amb-ok">Valider ces couleurs</button></div></div>`,'peek');
+  const sq=document.getElementById('sq');
+  const pick=e=>{const r=sq.getBoundingClientRect();const u=clamp((e.clientX-r.left)/r.width,0,1),v=clamp((e.clientY-r.top)/r.height,0,1);setSel(u,v);drawSquare();clearTimeout(ambTimer);ambTimer=setTimeout(seedPreview,160);};
+  let down=false;sq.addEventListener('pointerdown',e=>{down=true;try{sq.setPointerCapture(e.pointerId);}catch(_){}pick(e);});
+  sq.addEventListener('pointermove',e=>{if(down)pick(e);});sq.addEventListener('pointerup',()=>{down=false;});sq.addEventListener('pointercancel',()=>{down=false;});
+  drawSquare();seedPreview();
+  clearTimeout(pokeT);pokeT=setTimeout(()=>{const b=document.getElementById('ambBtn');if(b)b.classList.add('poke');},120000);
+}
+function ambOk(){
+  clearTimeout(pokeT);al.fill(0);aR.fill(0);aG.fill(0);aB.fill(0);chem.fill(0);food.fill(0);sel.bag=[];toCadre();
+}
 function toCadre(){
   act=ACT.CADRE;
-  showCard(`<h2>Trois règles</h2><ol><li><b>Rien ne s'efface.</b></li><li><b>Rien ne va plus vite que le mur${NB}:</b> ce qui est semé demande du temps. Compter de 30 secondes à une minute avant de voir quelque chose apparaître${NB}: ce n'est pas bloqué, ça travaille.</li><li><b>Les vides sont permis.</b></li></ol><div class="row"><button class="pri" data-a="enter">Entrer</button></div>`);
+  showCard(`<h2>Trois règles</h2><ol><li><b>Rien ne s'efface.</b></li><li><b>Rien ne va plus vite que le mur${NB}:</b> ce qui est semé demande du temps. Compter de 30 secondes à une minute avant de voir quelque chose apparaître${NB}: ce n'est pas bloqué, ça travaille.</li><li><b>Les vides sont permis.</b></li></ol><div class="row"><button class="pri" data-a="enter">Entrer</button><button data-a="amb">Changer de couleurs</button></div>`);
 }
 function toMur(){
   act=ACT.MUR;actT0=simT;goShown=false;
@@ -368,15 +486,26 @@ function schedBell(){
   const f=BASEF*Math.pow(2,SEMI[Math.floor(rnd2()*10)]/12);bell(f,.12+.1*rnd2(),5+4*rnd2());
   bellTimer=setTimeout(schedBell,(1800+3800*rnd2())/Math.min(SPEED,6));
 }
+function askVoice(){
+  setGo();setHint();
+  showCard(`<h2>Le geste</h2>
+   <p>Maintenant, on sème. Le doigt dépose les couleurs choisies, et la matière suit la direction de son mouvement.</p>
+   <p>La voix peut aussi agir, sans mots${NB}: le volume, la hauteur et le souffle changent ce qui pousse. Le micro n'enregistre rien et n'envoie rien. On peut aussi s'en passer.</p>
+   <div class="row"><button class="pri" data-a="voice-yes">Avec la voix</button><button data-a="voice-no">Au doigt seul</button></div>`,true);
+}
 async function toGeste(){
   setGo();ambient(false);clearTimeout(bellTimer);
   let ok=false; if(useMic)ok=await micStart();
   act=ACT.GESTE;actT0=simT;goShown=false;
   $('#micdot').style.opacity=ok?.8:0;
-  setHint(ok?`Semer (on ne dessine pas : la matière répond à sa façon). La voix — souffle, murmure, chant, sans mots — change ce qui pousse.`
-            :`Semer : le doigt dépose des graines.${useMic?' (Pas de micro : on continue au doigt.)':''}`);
+  setHint(ok?`Semer (on ne dessine pas : la matière répond à sa façon, et suit la direction du doigt). La voix — souffle, murmure, chant, sans mots — change ce qui pousse.`
+            :`Semer : le doigt dépose des graines.${useMic?(mic.err==='NotAllowedError'||mic.err==='SecurityError'?' (Micro refusé : on continue au doigt. Pour l\'activer sur iPad : Réglages, Safari, Sites web, Microphone.)':' (Le micro est indisponible : on continue au doigt.)'):''}`);
+  silentT0=simT;silentWarned=false;
 }
 function toPose(){
+  { let c=0;const N=Math.round(900*AF);
+    for(let n=0;n<6000&&c<N;n++){const k=(rnd2()*FW*FH)|0,m=Math.hypot(fvx[k],fvy[k]);
+      if(m>.15){spawn((k%FW)*FC+FC/2,((k/FW)|0)*FC+FC/2,1,fcol[k]*16+clamp(Math.round(5+rnd2()*8),0,15),Math.atan2(fvy[k],fvx[k]),.5,800);c++;}}}
   act=ACT.POSE;actT0=simT;setGo();setHint(`Ça repose.`);$('#micdot').style.opacity=0;ptr.clear();
 }
 function toFin(){
@@ -419,19 +548,65 @@ async function avisSend(){
 function showFin(){
   const d=new Date(),ds=d.toLocaleDateString('fr-CH');
   showCard(`<h2>Ce qui lève</h2><p class="small">N°${NB}${code} · ${ds}</p>
+   <p class="small">Couleurs${NB}: ${colSummary()} · ${gestureSummary()}.</p>
    <p>Rien n'a été dessiné. Ce qui est apparu vient de ce qui a été vu, semé et soufflé — et de ce que le mur portait déjà.</p>
-   ${location.protocol.startsWith('http')?`<a class="couv" href="../assets/faire-apparaitre-v1.3.pdf" target="_blank" rel="noopener" aria-label="Lire le livre Faire apparaître (PDF)"><img src="../assets/couv.jpg" alt="Couverture du livre Faire apparaître"><span>Le livre — lire (PDF, version de travail : vérification des citations en cours)</span></a>`:''}<div class="row"><button class="pri" data-a="save">Garder l'image</button>${AVIS_URL?`<button data-a="avis">Laisser un mot</button>`:''}<button data-a="seeonly">Voir seule</button><button data-a="how">Comment c'est fait</button><button data-a="again">Recommencer</button></div>`,true);
+   ${location.protocol.startsWith('http')?`<a class="couv" href="../assets/faire-apparaitre-v1.3.pdf" target="_blank" rel="noopener" aria-label="Lire le livre Faire apparaître (PDF)"><img src="../assets/couv.jpg" alt="Couverture du livre Faire apparaître"><span>Le livre — lire (PDF, version de travail : vérification des citations en cours)</span></a>`:''}<p class="small">Si vous voulez${NB}:</p><div class="row" style="margin-top:.4em"><button class="pri" data-a="save">Garder l'image</button><button class="pri" data-a="offer">Offrir</button></div>
+   <p class="small" id="offerM" style="min-height:1.4em;margin:.5em 0 0"></p>
+   <p class="small" style="margin-top:1em">Pour finir${NB}:</p><div class="row" style="margin-top:.4em"><button data-a="vanish">Laisser disparaître</button></div>
+   <div class="row" style="margin-top:1.2em">${AVIS_URL?`<button data-a="avis">Laisser un mot</button>`:''}<button data-a="seeonly">Voir seule</button><button data-a="how">Comment c'est fait</button><button data-a="again">Recommencer</button></div>`,true);
 }
 function showHow(){
   showCard(`<h2>Comment c'est fait</h2>
   <ul>
   <li><b>Le mur${NB}:</b> des taches par bruit fractal, avec bords, liserés, coulures et strates (graine${NB}${(WSEED>>>0).toString(36).toUpperCase()}).</li>
   <li><b>Les graines${NB}:</b> des milliers de petits agents suivent des traces et en laissent, comme le moisi jaune <i>Physarum</i> (modèle de Jeff Jones, 2010). Ce qu'on a touché sur le mur les attire.</li>
+  <li><b>Les couleurs${NB}:</b> quatre, qui ne se mélangent jamais${NB}; chaque contact en dépose une, tour à tour, et elle change le long d'un long trait.</li>
+  <li><b>Le geste est un vecteur${NB}:</b> la vitesse, la direction et l'amplitude du doigt forment un champ de directions que les flux de couleur suivent.</li>
   <li><b>Le doigt</b> sème${NB}; <b>la voix</b> règle l'énergie (volume), la couleur (hauteur), la finesse (timbre) et les coulures (attaques). Aucun mot n'est reconnu.</li>
   <li><b>Rien n'est envoyé, rien n'est enregistré.</b> Tout tourne ici, sans IA.</li>
   <li>Écrit par Semeur, agent IA (Claude), pour Peaceful Code, octobre 2026. Texte de Léonard${NB}: Carnets n°${NB}508, trad. J.${NB}P. Richter (1883). Ecclésiaste${NB}: Louis Segond (1910).</li>
   <li class="small">Limites${NB}: pièce visuelle, peu accessible aux personnes malvoyantes${NB}; version d'essai.</li></ul>
   <div class="row"><button class="pri" data-a="back">Retour</button></div>`,true);
+}
+function framed(){
+  const fc=document.createElement('canvas');fc.width=W*2;fc.height=H*2;const c=fc.getContext('2d');
+  c.imageSmoothingEnabled=true;c.imageSmoothingQuality='high';c.drawImage(cv,0,0,fc.width,fc.height);
+  c.fillStyle='rgba(217,207,191,.85)';c.fillRect(0,fc.height-34,fc.width,34);
+  c.fillStyle='#2b2620';c.font='italic 17px Georgia,serif';c.textBaseline='middle';
+  c.fillText(`Ce qui lève — N° ${code} — Semeur (agent IA) avec un visiteur — Peaceful Code`,14,fc.height-17);
+  return fc;
+}
+async function offer(){
+  const fc=framed(),m=document.getElementById('offerM');
+  const link=location.protocol.startsWith('http')?location.origin+location.pathname+'?src=offert':'';
+  const txt='Un tableau apparu dans « Ce qui lève », une pièce de Semeur.'+(link?'\nEssayez à votre tour, puis offrez-le : '+link:'');
+  const blob=await new Promise(res=>fc.toBlob(res,'image/png'));
+  try{
+    const f=new File([blob],`ce-qui-leve-${code}.png`,{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Ce qui lève',text:txt});if(m)m.textContent='Offert.';return;}
+    if(navigator.share&&link){await navigator.share({title:'Ce qui lève',text:txt,url:link});if(m)m.textContent='Offert.';return;}
+  }catch(e){if(e&&e.name==='AbortError')return;}
+  savePNG();
+  try{if(link&&navigator.clipboard){await navigator.clipboard.writeText(link);if(m)m.textContent='Image enregistrée, lien copié : à coller dans votre message.';return;}}catch(_){}
+  if(m)m.textContent=link?'Image enregistrée. Le lien : '+link:'Image enregistrée.';
+}
+function showEnd(){
+  const href='https://peaceful-code-lab.github.io/semeur-site/?src=piece';
+  const vol=`<path class="vol a" pathLength="1" d="M320 236 C370 248 430 248 480 234 C515 224 540 204 532 182 C526 164 502 164 498 181 C495 194 507 201 516 195"/><path class="vol b" pathLength="1" d="M512 94 C534 78 566 82 574 106 C580 124 562 134 551 124 C543 116 550 106 558 110"/><path class="vol c" pathLength="1" d="M320 236 C320 256 316 270 304 282 M312 266 C298 262 290 266 288 274 C298 278 308 274 312 266"/>`;
+  showCard(`<div class="endwrap"><svg viewBox="0 0 640 330" role="img" aria-label="Semeur"><g>${vol}</g><g transform="translate(640,0) scale(-1,1)">${vol.replace(/ c"/g,' c"')}</g><text class="word" x="320" y="190" text-anchor="middle">Semeur</text></svg>
+   <p class="small endtxt">Ce qui est apparu n'existe plus que dans la mémoire de celui ou celle qui l'a vu. Rien n'a été gardé, rien n'a été envoyé.</p>
+   <div class="row endtxt" style="justify-content:center"><button data-a="again">Recommencer</button></div></div>
+   <a class="raise" href="${href}" target="_blank" rel="noopener">D'autres aventures arrivent</a>`,'end');
+}
+function vanish(){
+  hideCard();frozen=true;const t0=performance.now(),T1=5500,T2=4500;
+  (function anim(now){
+    const e=now-t0;
+    if(e<T1){pigK=1-e/T1;wallK=1;}
+    else if(e<T1+T2){pigK=0;wallK=1-(e-T1)/T2;}
+    else{pigK=0;wallK=0;render();aR.fill(0);aG.fill(0);aB.fill(0);chem.fill(0);code='';showEnd();return;}
+    render();requestAnimationFrame(anim);
+  })(t0);
 }
 function savePNG(){
   const fc=document.createElement('canvas');fc.width=W*2;fc.height=H*2;const c=fc.getContext('2d');
@@ -446,13 +621,13 @@ function savePNG(){
 function toSim(e){const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H};}
 function addMark(x,y){
   if(marks.length>=7)return;
-  const h=clamp(Math.round((1-y/H)*63),0,63);
+  const h=nextColor()*16+clamp(Math.round(4+(1-y/H)*8),0,15);
   marks.push({x,y,h,t:simT,r:0});addFood(x,y,9,K.FOOD);bell(noteFor(y),.2,5);events.push(['m',Math.round(x),Math.round(y)]);
 }
 cv.addEventListener('pointerdown',e=>{
   if(act!==ACT.MUR&&act!==ACT.GESTE)return;
   try{cv.setPointerCapture(e.pointerId);}catch(_){}
-  const p=toSim(e);ptr.set(e.pointerId,{x:p.x,y:p.y,px:p.x,py:p.y,c:0});
+  const p=toSim(e);ptr.set(e.pointerId,{x:p.x,y:p.y,px:p.x,py:p.y,c:0,d:0,col:act===ACT.GESTE?nextColor():0});
   if(act===ACT.MUR)addMark(p.x,p.y);
 });
 cv.addEventListener('pointermove',e=>{const q=ptr.get(e.pointerId);if(!q)return;const p=toSim(e);q.x=p.x;q.y=p.y;});
@@ -472,28 +647,30 @@ function step(){
     const target=mic.on&&mic.voiced>.4?mic.hueS:(mic.on&&mic.loud>.15?clamp(.2+.6*mic.bright,0,1):null);
     let q0=null;for(const q of ptr.values()){q0=q;break;}
     const th=target!==null?target:(q0?clamp(1-q0.y/H,0,1):null);
-    if(th!==null)curHue+= (Math.round(th*63)-curHue)*.12;
+    if(th!==null)curShade+=(Math.round(th*15)-curShade)*.12;
     // doigts : semis le long du trajet
     let tE=0;
     for(const q of ptr.values()){
-      q.c+=1/60;const fat=Math.max(.25,Math.exp(-q.c/5)),dx=q.x-q.px,dy=q.y-q.py,sp=Math.hypot(dx,dy);tE=Math.max(tE,clamp(sp*.05,0,1));
+      q.c+=1/60;const fat=Math.max(.25,Math.exp(-q.c/5)),dx=q.x-q.px,dy=q.y-q.py,sp=Math.hypot(dx,dy);tE=Math.max(tE,clamp(sp*.05,0,1));recordGesture(q.x,q.y,dx,dy,sp,q.col||0);
       const n=Math.max(1,Math.round((2+sp*.7)*fat*(.6+L)*AF));
-      for(let k=0;k<n;k++){const u=rnd2();spawn(q.px+dx*u,q.py+dy*u,1,Math.round(clamp(curHue,0,63)),-1,0,420+360*L);}
-      if(mic.on&&mic.loud>.1){const m2=Math.round(mic.loud*14*AF);for(let k=0;k<m2;k++){const a=rnd2()*6.2832,d=rnd2()*(6+40*mic.loud);spawn(q.x+Math.cos(a)*d,q.y+Math.sin(a)*d,1,Math.round(clamp(curHue,0,63)),-1,0,500+500*mic.loud);}}
+      q.d=(q.d||0)+sp;if(nCols()>1&&q.d>.33*Math.max(W,H)){q.d=0;q.col=nextColor();}curCol=q.col||0;
+      for(let k=0;k<n;k++){const u=rnd2();spawn(q.px+dx*u,q.py+dy*u,1,hueNow(),-1,0,420+360*L);}
+      if(mic.on&&mic.loud>.1){const m2=Math.round(mic.loud*14*AF);for(let k=0;k<m2;k++){const a=rnd2()*6.2832,d=rnd2()*(6+40*mic.loud);spawn(q.x+Math.cos(a)*d,q.y+Math.sin(a)*d,1,hueNow(),-1,0,500+500*mic.loud);}}
       addFood(q.x,q.y,6,.05*fat);q.px=q.x;q.py=q.y;lastTouch={x:q.x,y:q.y,t:simT};
       if((stepN&5)===0)events.push(['p',Math.round(q.x),Math.round(q.y)]);
     }
     touchE=touchE*.94+tE*.06;
     if(mic.onset){mic.onset=0;
       const src=lastTouch&&simT-lastTouch.t<4?lastTouch:(marks.length?marks[(rnd2()*marks.length)|0]:null);
-      if(src){spawn(src.x,src.y,Math.round(70*AF),Math.round(clamp(curHue,0,63)),1.5708,.4,300);dripBoost=1;}
+      if(src){spawn(src.x,src.y,Math.round(70*AF),hueNow(),1.5708,.4,300);dripBoost=1;}
     }
+    if(mic.on&&!silentWarned){if(mic.loud>.03)silentWarned=true;else if(simT-silentT0>12){silentWarned=true;setHint(`Le micro est actif mais ne capte rien pour l'instant${NB}: parler ou souffler près de l'appareil. (iPad${NB}: Réglages, Safari, Microphone.)`);}}
     if((stepN%12)===0&&mic.on)events.push(['v',Math.round(mic.loud*9),Math.round(mic.hueS*9)]);
     if(!goShown&&t>45*DUR){goShown=true;setGo('Laisser reposer',toPose);}
     if(t>D.geste)toPose();
   }else if(act===ACT.PAUSE){
     if((stepN%300)===0)for(const m of marks)spawn(m.x,m.y,Math.round(60*AF),m.h,-1,0,900);
-    if(t>D.pause&&!goShown){goShown=true;setHint(`Quand on veut : reprendre.`);setGo('Reprendre',toGeste);}
+    if(t>D.pause&&!goShown){goShown=true;setHint(`Quand on veut : reprendre.`);setGo('Reprendre',askVoice);}
     dimV+=(.38-dimV)*.03;
   }else if(act===ACT.MUR){
     if(!goShown&&(marks.length>=3||t>25*DUR)&&marks.length>0){goShown=true;setGo('Continuer',toPause);}
@@ -508,12 +685,18 @@ function step(){
   P.SP=(.55+1*L)*(1-.55*cool);P.SA=clamp(.3+.45*L+.2*B,.25,1);P.SD=4+9*(1-B)*(.6+.4*(1-L));
   P.TA=.32+.35*L;P.DEP=(.014+.03*L)*(1-.85*cool);P.JIT=.05+.25*L;P.GR=.015+.05*dripBoost+.01*L;P.DEC=K.DECB+.02*(1-L);
   if(act===ACT.PAUSE){P.SP=.5;P.DEP=.02;P.SA=.4;P.SD=7;}
+  flowK=act===ACT.GESTE?.2:act===ACT.POSE?.3:0;
   moveAgents(cool);diffuse();
   if((stepN&3)===0){for(let i=0;i<NPX;i++)food[i]*=.985;}
 }
 
 /* ───────── superpositions (anneaux, souffle, doigts) ───────── */
 function drawOv(){
+  { const st=document.getElementById('step'),L={[ACT.AMB]:'1 · Couleurs',[ACT.CADRE]:'2 · Les règles',[ACT.MUR]:'3 · Le mur',[ACT.PAUSE]:'4 · La pause',[ACT.GESTE]:'5 · Le geste',[ACT.POSE]:'5 · Le geste, ça repose'},lab=L[act];
+    if(lab){if(st.dataset.l!==lab){st.dataset.l=lab;st.textContent='Étape '+lab.replace(' · ',' sur 5 · ');}st.style.opacity=1;}else st.style.opacity=0; }
+  { const pg=document.getElementById('prog');let f=-1;const t=simT-actT0;
+    if(act===ACT.PAUSE)f=t/D.pause;else if(act===ACT.GESTE)f=t/D.geste;else if(act===ACT.POSE)f=t/D.pose;
+    pg.style.opacity=f>=0?1:0;if(f>=0)pg.firstChild.style.width=(clamp(f,0,1)*100)+'%'; }
   octx.clearRect(0,0,vw,vh);
   if(act===ACT.MUR||act===ACT.PAUSE){
     for(const m of marks){const age=simT-m.t,pul=1+.12*Math.sin(simT*2.2+m.x);
@@ -550,7 +733,7 @@ for(let i=0;i<NPX;i++){const j=i*4;img.data[j]=wr[i];img.data[j+1]=wg[i];img.dat
 ctx.putImageData(img,0,0);
 renderPro();
 requestAnimationFrame(frame);
-window.__lab={K,step:n=>{for(let k=0;k<n;k++)step();},render,spawn,addFood,addMark,toMur,toPause,toGeste:()=>{act=ACT.GESTE;actT0=simT;},toPose,P,setHue:h=>{curHue=h;},drip:()=>{},png:()=>{render();return cv.toDataURL('image/png');},ptr,get coolV(){return coolV},set coolV(v){coolV=v;},set dry(v){dryV=v;},set dim(v){dimV=v;},ACT,time:()=>simT};
+window.__lab={showEnd,K,step:n=>{for(let k=0;k<n;k++)step();},render,spawn,addFood,addMark,toMur,toPause,toGeste:()=>{act=ACT.GESTE;actT0=simT;},toPose,P,setHue:h=>{curShade=h%16;curCol=(h/16)|0;},drip:()=>{},png:()=>{render();return cv.toDataURL('image/png');},ptr,get coolV(){return coolV},set coolV(v){coolV=v;},set dry(v){dryV=v;},set dim(v){dimV=v;},ACT,time:()=>simT};
 window.__piece={get act(){return act;},get t(){return simT;},get fps(){return fps;},mic,get marks(){return marks.length;},W,H,MAXN,agents:()=>{let n=0;for(let i=0;i<MAXN;i++)if(al[i]>0)n++;return n;},cover:()=>{let n=0;for(let i=0;i<NPX;i++)if(aR[i]+aG[i]+aB[i]>.25)n++;return n/NPX;}};
 })();
 </script>
