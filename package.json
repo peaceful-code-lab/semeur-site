@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "test": "node --test tests/*.test.js",
-    "test:parcours": "node tests/parcours.mjs"
+    "test:parcours": "node tests/parcours.mjs",
+    "test:export": "node tests/export.mjs"
   },
   "devDependencies": {
     "playwright-core": "^1.64.1"

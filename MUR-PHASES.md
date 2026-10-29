@@ -31,3 +31,7 @@ Constat : seuls GESTE et POSE avancent seuls. Tout le reste attend le visiteur. 
 - Geste : plus de consigne « dessiner ». Doigt posé (vitesse < 0,35) 2,5 s : le trait est coupé et un nouveau commence (fatigue remise à zéro, couleur suivante). Entre-temps le doigt immobile ne dépose plus rien après 0,5 s.
 - Palette : deux couleurs au plus (coin = 1, bord ou centre = 2).
 - Logique pure : `public/le-mur/moteur.js`. Tests : `npm test` (node:test, 32 scénarios) ; parcours : `npm run test:parcours` (Playwright, Chromium headless, 17 vérifications dont CPU/mémoire). Non testé : iPad, Safari, tactile réel, micro, son, rendu visuel.
+
+## Export HD pour l'impression (mur-v3)
+
+Écran final : « Télécharger A4 » (2480×3508) et « Télécharger A3 » (3508×4961), 300 dpi, PNG ; la page suit l'orientation du tableau (paysage : dimensions échangées), tableau entier centré avec marge et légende. Le petit format (« Garder l'image ») est inchangé. Redessiné depuis les champs de la simulation (interpolation Catmull-Rom + formule de couleur de l'écran + grain), pas un agrandissement du PNG ; le détail ne dépasse pas la simulation (~640 px). Repli : mobile / canevas < 16,7 Mpx (iOS Safari) ou < 4 Go : A3 refusé avec message, A4 proposé ; < 1 Go : rien. Point d'accroche des comptes : `exportGate(fmt)` dans index.html. Tests : `tests/export.test.js` (node), `npm run test:export` (Playwright, 18 vérifications). Non testé : iPad, Safari, téléphone réel, mémoire native précise.
