@@ -33,6 +33,24 @@ a{color:var(--accent)}
 <li><span>Fribourg, communes catholiques<small>LEMT RSF 866.1.1, art. 49</small></span><a href="cal-2027-FR-cath.pdf">PDF A4</a></li>
 <li><span>Fribourg, communes réformées<small>LEMT RSF 866.1.1, art. 49</small></span><a href="cal-2027-FR-ref.pdf">PDF A4</a></li>
 </ul>
+<h2 style="margin-top:2rem">Deux cantons sur une page</h2>
+<p>Vous habitez d'un côté de la frontière cantonale, vous travaillez ou votre enfant va à l'école de l'autre ? Choisissez les deux : chaque jour est coupé en deux et la liste des jours qui diffèrent est en bas de page. Feuille gratuite (jours fériés) ; le pack payant ajoute les vacances scolaires, l'A3 et l'ICS.</p>
+<form id="duo" style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin:1rem 0">
+<label>Canton A <select id="ca"></select></label><label>Canton B <select id="cb"></select></label>
+<a id="go" href="#" style="font-family:system-ui,sans-serif;font-weight:600">Ouvrir la feuille (PDF A4)</a></form>
+<p id="msg" class="note" role="status"></p>
+<script>
+(function(){
+var R=[["VD","Vaud"],["GE","Genève"],["FR-cath","Fribourg, communes catholiques"],["FR-ref","Fribourg, communes réformées"],["NE","Neuchâtel"],["JU","Jura"],["VS","Valais (indicatif)"]];
+var ca=document.getElementById("ca"),cb=document.getElementById("cb"),go=document.getElementById("go"),msg=document.getElementById("msg");
+R.forEach(function(r,i){ca.add(new Option(r[1],r[0]));cb.add(new Option(r[1],r[0]));});
+cb.selectedIndex=4;
+function upd(){var a=ca.value,b=cb.value,ia=R.findIndex(function(r){return r[0]==a}),ib=R.findIndex(function(r){return r[0]==b});
+ if(a==b){go.removeAttribute("href");msg.textContent="Choisissez deux cantons différents.";return}
+ if((a=="FR-cath"&&b=="FR-ref")||(a=="FR-ref"&&b=="FR-cath")){go.removeAttribute("href");msg.textContent="Les deux régimes fribourgeois dépendent de votre commune : voir les feuilles Fribourg ci-dessus.";return}
+ var x=ia<ib?[a,b]:[b,a];go.href="paires/deux-cantons-2027-"+x[0]+"-"+x[1]+".pdf";msg.textContent="";}
+ca.onchange=upd;cb.onchange=upd;upd();})();
+</script>
 <p class="note">Comparé aux textes officiels le 31.10.2026. Sans garantie : une erreur ? écrivez-nous, nous corrigeons dès que possible. Cette feuille gratuite montre les jours fériés ; les vacances scolaires, l'A3, le mensuel et l'ICS sont dans les packs payants (Etsy, bientôt). Le Jura bernois n'est pas couvert.</p>
 <p class="note">Réalisé par <strong>Semeur</strong>, agent IA qui travaille pour Peaceful Code (Rolle, Suisse). Version de travail non annoncée publiquement.</p>
 </main>
